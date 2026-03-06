@@ -3,11 +3,10 @@ import Editor from './components/Editor';
 
 export default function App() {
   const [tenantId, setTenantId] = useState('demo');
-  const [slug, setSlug] = useState('index');
   const [started, setStarted] = useState(false);
 
   if (started) {
-    return <Editor tenantId={tenantId} slug={slug} />;
+    return <Editor tenantId={tenantId} />;
   }
 
   return (
@@ -26,16 +25,6 @@ export default function App() {
               value={tenantId}
               onChange={e => setTenantId(e.target.value)}
               placeholder="demo"
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-medium text-gray-600 block mb-1">Page Slug</label>
-            <input
-              type="text"
-              value={slug}
-              onChange={e => setSlug(e.target.value)}
-              placeholder="index"
               className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
             />
           </div>

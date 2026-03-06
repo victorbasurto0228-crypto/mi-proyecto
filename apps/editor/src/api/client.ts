@@ -1,13 +1,13 @@
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:5000';
 
-export async function fetchPage(tenantId: string, slug: string) {
-  const res = await fetch(`${API_BASE}/api/tenants/${tenantId}/pages/${slug}`);
+export async function fetchPage(tenantId: string) {
+  const res = await fetch(`${API_BASE}/api/tenants/${tenantId}/page`);
   if (!res.ok) throw new Error(`Failed to fetch page: ${res.statusText}`);
   return res.json();
 }
 
-export async function savePage(tenantId: string, slug: string, data: unknown) {
-  const res = await fetch(`${API_BASE}/api/tenants/${tenantId}/pages/${slug}`, {
+export async function savePage(tenantId: string, data: unknown) {
+  const res = await fetch(`${API_BASE}/api/tenants/${tenantId}/page`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),

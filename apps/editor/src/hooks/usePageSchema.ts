@@ -11,7 +11,7 @@ interface UsePageSchemaResult {
   saveSchema: () => Promise<void>;
 }
 
-export function usePageSchema(tenantId: string, slug: string): UsePageSchemaResult {
+export function usePageSchema(tenantId: string): UsePageSchemaResult {
   const [schema, setSchema] = useState<PageSchema | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -20,11 +20,11 @@ export function usePageSchema(tenantId: string, slug: string): UsePageSchemaResu
   useEffect(() => {
     setLoading(true);
     setError(null);
-    fetchPage(tenantId, slug)
+    fetchPage(tenantId)
       .then(setSchema)
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
-  }, [tenantId, slug]);
+  }, [tenantId]);
 
   const updateSchema = useCallback((updated: PageSchema) => {
     setSchema(updated);
@@ -35,14 +35,14 @@ export function usePageSchema(tenantId: string, slug: string): UsePageSchemaResu
     setSaving(true);
     setError(null);
     try {
-      const saved = await savePage(tenantId, slug, schema);
+      const saved = await savePage(tenantId, schema);
       setSchema(saved);
     } catch (e) {
       setError((e as Error).message);
     } finally {
       setSaving(false);
     }
-  }, [schema, tenantId, slug]);
+  }, [schema, tenantId]);
 
   return { schema, loading, saving, error, updateSchema, saveSchema };
 }

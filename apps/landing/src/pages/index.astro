@@ -10,7 +10,7 @@ let tenantSchema: PageSchema | null = null;
 if (tenantId) {
   const apiBase = import.meta.env.API_URL ?? 'http://localhost:5000';
   try {
-    const res = await fetch(`${apiBase}/api/tenants/${tenantId}/pages/index`);
+    const res = await fetch(`${apiBase}/api/tenants/${tenantId}/page`);
     if (res.ok) tenantSchema = await res.json() as PageSchema;
   } catch (_e) { /* API not available */ }
 }

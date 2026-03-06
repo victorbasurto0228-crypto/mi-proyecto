@@ -35,8 +35,8 @@ public class InMemoryStore
             CreatedAt = DateTime.UtcNow
         };
 
-        // Pages
-        Pages["demo:index"] = BuildDemoPage();
+        // Pages – keyed by tenantId (one page per tenant)
+        Pages["demo"] = BuildDemoPage();
     }
 
     private static PageSchema BuildDemoPage()

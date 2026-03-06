@@ -6,12 +6,11 @@ export interface PreviewFrameHandle {
 
 interface PreviewFrameProps {
   tenantId: string;
-  slug?: string;
   previewBase?: string;
 }
 
 const PreviewFrame = forwardRef<PreviewFrameHandle, PreviewFrameProps>(
-  ({ tenantId, slug = 'index', previewBase = 'http://localhost:4321' }, ref) => {
+  ({ tenantId, previewBase = 'http://localhost:4321' }, ref) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
 
     useImperativeHandle(ref, () => ({
@@ -24,9 +23,7 @@ const PreviewFrame = forwardRef<PreviewFrameHandle, PreviewFrameProps>(
       },
     }));
 
-    const src = slug === 'index'
-      ? `${previewBase}?tenant=${encodeURIComponent(tenantId)}`
-      : `${previewBase}/${slug}?tenant=${encodeURIComponent(tenantId)}`;
+    const src = `${previewBase}/preview?tenant=${encodeURIComponent(tenantId)}`;
 
     return (
       <iframe

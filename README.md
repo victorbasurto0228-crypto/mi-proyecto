@@ -13,7 +13,7 @@ A monorepo that implements a dynamic multi-tenant landing page system with a vis
 │  localhost:4321/app  ──► Astro SSR ──► Serves React Editor SPA │
 │  localhost:5173      ──► React SPA ──► Visual editor directly  │
 │                                                                  │
-│  Editor Preview uses an <iframe> pointing to Astro SSR         │
+│  Editor Preview uses an <iframe> pointing to /preview?tenant=  │
 │  Saves trigger PUT to .NET API, then iframe.reload()           │
 └─────────────────────────────────────────────────────────────────┘
 
@@ -28,17 +28,20 @@ apps/
 ### `apps/api` – .NET 8 REST API
 - In-memory storage (no database)
 - Seed data: tenant `demo`, template `generic-saas`, full SaaS demo page
+- **Each tenant has exactly one landing page** (no page slugs)
 - Runs on port **5000**
 
 ### `apps/landing` – Astro SSR
 - Multi-tenant middleware: detects tenant from subdomain or `?tenant=` query param
 - Renders landing pages from `PageSchema` fetched from the API
+- `/preview?tenant=xxx` — editor preview endpoint (includes PostMessage listener)
 - Serves the React editor SPA at `/app`
 - Runs on port **4321**
 
 ### `apps/editor` – React SPA (Vite)
 - Visual editor with content fields panel + live preview iframe
-- Preview iframe points to Astro SSR and reloads on save
+- Preview iframe points to Astro SSR `/preview` and reloads on save
+- Auto-saves after 2s of inactivity (debounced)
 - Runs on port **5173**
 
 ---
@@ -79,14 +82,16 @@ npm run dev
 |-----|-------------|
 | `http://localhost:4321` | Service own landing page |
 | `http://localhost:4321?tenant=demo` | Demo tenant landing page (rendered by Astro SSR) |
+| `http://localhost:4321/preview?tenant=demo` | Preview endpoint (editor iframe target) |
 | `http://localhost:4321/app` | React editor (proxied via iframe) |
-| `http://localhost:5173` | React editor directly (with login screen) |
+| `http://localhost:5173` | React editor directly |
 
 **Editor flow:**
 1. Open `http://localhost:5173`
-2. Enter tenant ID `demo` and slug `index`, click **Open Editor**
+2. Enter tenant ID `demo`, click **Open Editor**
 3. Edit text, images, colors in the left panel
-4. Click **Save** — the preview iframe reloads showing the updated landing page
+4. Auto-save triggers after 2s — preview iframe reloads showing updated content
+5. Or click **Save** manually to trigger an immediate save + iframe reload
 
 ---
 
@@ -99,13 +104,10 @@ GET    /api/tenants/{tenantId}          Get tenant by ID
 POST   /api/tenants                     Create tenant
 ```
 
-### Pages
+### Page (one per tenant)
 ```
-GET    /api/tenants/{tenantId}/pages              List pages for tenant
-GET    /api/tenants/{tenantId}/pages/{slug}       Get page schema
-PUT    /api/tenants/{tenantId}/pages/{slug}       Update page schema
-POST   /api/tenants/{tenantId}/pages             Create page
-DELETE /api/tenants/{tenantId}/pages/{slug}       Delete page
+GET    /api/tenants/{tenantId}/page     Get tenant's landing page schema
+PUT    /api/tenants/{tenantId}/page     Update tenant's landing page schema
 ```
 
 ### Templates
@@ -123,7 +125,6 @@ The `PageSchema` is the core data model shared across all three apps:
 ```typescript
 interface PageSchema {
   id: string;
-  slug: string;
   templateId: string;   // which Astro template to use
   tenantId: string;
   seo: SeoMeta;
