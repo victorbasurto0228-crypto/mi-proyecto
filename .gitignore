@@ -1,0 +1,20 @@
+# .NET
+apps/api/bin/
+apps/api/obj/
+
+# Node
+apps/landing/node_modules/
+apps/landing/dist/
+apps/editor/node_modules/
+apps/editor/dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Astro
+apps/landing/.astro/

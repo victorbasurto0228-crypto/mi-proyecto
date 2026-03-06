@@ -1,0 +1,69 @@
+---
+import type { Section } from '../types/page-schema';
+import ComponentRenderer from './ComponentRenderer.astro';
+import HeroSection from './sections/HeroSection.astro';
+import FeaturesSection from './sections/FeaturesSection.astro';
+import TestimonialsSection from './sections/TestimonialsSection.astro';
+import PricingSection from './sections/PricingSection.astro';
+import CtaSection from './sections/CtaSection.astro';
+import FooterSection from './sections/FooterSection.astro';
+
+export interface Props {
+  section: Section;
+}
+
+const { section } = Astro.props;
+const components = section.components
+  .filter(c => c.visible)
+  .sort((a, b) => a.order - b.order);
+---
+
+{section.visible && (
+  <>
+    {section.type === 'header' && (
+      <header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          {components.map(c => (
+            <ComponentRenderer node={c} />
+          ))}
+        </div>
+      </header>
+    )}
+
+    {section.type === 'hero' && (
+      <HeroSection components={components} />
+    )}
+
+    {section.type === 'features' && (
+      <FeaturesSection components={components} />
+    )}
+
+    {section.type === 'testimonials' && (
+      <TestimonialsSection components={components} />
+    )}
+
+    {section.type === 'pricing' && (
+      <PricingSection components={components} />
+    )}
+
+    {section.type === 'cta' && (
+      <CtaSection components={components} />
+    )}
+
+    {section.type === 'footer' && (
+      <FooterSection components={components} />
+    )}
+
+    {(section.type !== 'header' && section.type !== 'hero' && section.type !== 'features' &&
+      section.type !== 'testimonials' && section.type !== 'pricing' &&
+      section.type !== 'cta' && section.type !== 'footer') && (
+      <section id={section.id} class="py-16 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+          {components.map(c => (
+            <ComponentRenderer node={c} />
+          ))}
+        </div>
+      </section>
+    )}
+  </>
+)}

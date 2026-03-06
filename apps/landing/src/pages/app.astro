@@ -1,0 +1,23 @@
+---
+// Serves the React Editor SPA
+// The editor bundle is served from the editor dev server (http://localhost:5173)
+// For production, the built editor assets would be served here.
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LandingCraft Editor</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { overflow: hidden; }
+      iframe { width: 100vw; height: 100vh; border: none; }
+    </style>
+  </head>
+  <body>
+    <!-- In development, proxy to the Vite dev server for the React editor -->
+    <iframe src="http://localhost:5173" title="LandingCraft Editor" allowfullscreen></iframe>
+  </body>
+</html>

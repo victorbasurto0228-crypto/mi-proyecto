@@ -1,0 +1,71 @@
+---
+import type { ComponentNode } from '../../types/page-schema';
+
+export interface Props {
+  components: ComponentNode[];
+}
+
+const { components } = Astro.props;
+
+const heading = components.find(c => c.type === 'heading');
+const subtitle = components.find(c => c.type === 'paragraph');
+const grid = components.find(c => c.type === 'grid');
+const cards = (grid?.children ?? []).filter(c => c.visible).sort((a, b) => a.order - b.order);
+
+const highlightIndex = 1; // middle card is highlighted
+---
+
+<section id="pricing" class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    {heading && (
+      <div class="text-center mb-4 text-3xl font-bold text-gray-900">
+        <h2>{String(heading.value ?? '')}</h2>
+      </div>
+    )}
+    {subtitle && (
+      <div class="text-center mb-16 text-gray-500 text-lg">
+        <p>{String(subtitle.value ?? '')}</p>
+      </div>
+    )}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+      {cards.map((card, i) => {
+        const children = (card.children ?? []).filter(c => c.visible).sort((a, b) => a.order - b.order);
+        const name = children.find(c => c.id.includes('name'));
+        const price = children.find(c => c.id.includes('price'));
+        const featuresList = children.find(c => c.id.includes('features'));
+        const cta = children.find(c => c.type === 'button');
+        const featuresText = String(featuresList?.value ?? '');
+        const featuresArr = featuresText.split('\n').filter(Boolean);
+        const isHighlighted = i === highlightIndex;
+        return (
+          <div class={`rounded-2xl p-8 flex flex-col gap-6 border ${isHighlighted ? 'shadow-2xl border-indigo-400 scale-105' : 'border-gray-200 shadow-sm'}`}
+               style={isHighlighted ? 'background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white;' : ''}>
+            {name && (
+              <h3 class={`text-xl font-bold ${isHighlighted ? 'text-white' : 'text-gray-900'}`}>{String(name.value ?? '')}</h3>
+            )}
+            {price && (
+              <p class={`text-4xl font-extrabold ${isHighlighted ? 'text-white' : 'text-gray-900'}`}>{String(price.value ?? '')}</p>
+            )}
+            <ul class="flex flex-col gap-2">
+              {featuresArr.map(f => (
+                <li class={`flex items-center gap-2 text-sm ${isHighlighted ? 'text-indigo-100' : 'text-gray-600'}`}>
+                  <span class={isHighlighted ? 'text-white' : 'text-indigo-500'}>✓</span>
+                  {f}
+                </li>
+              ))}
+            </ul>
+            {cta && (
+              <a
+                href={cta.link?.href ?? '#'}
+                class={`mt-auto text-center py-3 px-6 rounded-xl font-semibold transition ${isHighlighted ? 'bg-white text-indigo-600 hover:bg-indigo-50' : 'text-white hover:opacity-90'}`}
+                style={!isHighlighted ? 'background-color: var(--color-primary)' : ''}
+              >
+                {String(cta.value ?? '')}
+              </a>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</section>

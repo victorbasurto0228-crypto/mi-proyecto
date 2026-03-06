@@ -1,0 +1,64 @@
+---
+import type { ComponentNode } from '../../types/page-schema';
+import ComponentRenderer from '../ComponentRenderer.astro';
+
+export interface Props {
+  components: ComponentNode[];
+}
+
+const { components } = Astro.props;
+
+function find(type: string) {
+  return components.find(c => c.id.includes(type));
+}
+
+const badge = components.find(c => c.type === 'badge');
+const heading = components.find(c => c.type === 'heading');
+const paragraph = components.find(c => c.type === 'paragraph');
+const buttons = components.filter(c => c.type === 'button');
+const image = components.find(c => c.type === 'image');
+---
+
+<section id="hero" class="py-20 sm:py-28 bg-gradient-to-b from-indigo-50 to-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    {badge && (
+      <div class="mb-6">
+        <ComponentRenderer node={badge} />
+      </div>
+    )}
+    {heading && (
+      <div class="mb-6 max-w-4xl mx-auto">
+        <ComponentRenderer node={heading} />
+      </div>
+    )}
+    {paragraph && (
+      <div class="mb-10 max-w-2xl mx-auto text-gray-500 text-lg">
+        <ComponentRenderer node={paragraph} />
+      </div>
+    )}
+    {buttons.length > 0 && (
+      <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+        {buttons.map((btn, i) => (
+          <a
+            href={btn.link?.href ?? '#'}
+            target={btn.link?.target ?? '_self'}
+            class={i === 0
+              ? 'inline-flex items-center justify-center px-8 py-4 rounded-xl font-semibold text-white text-lg shadow-lg hover:opacity-90 transition'
+              : 'inline-flex items-center justify-center px-8 py-4 rounded-xl font-semibold text-gray-700 text-lg border border-gray-200 hover:bg-gray-50 transition'}
+            style={i === 0 ? 'background-color: var(--color-primary)' : undefined}
+          >
+            {String(btn.value ?? '')}
+          </a>
+        ))}
+      </div>
+    )}
+    {image && (() => {
+      const img = image.value as { src: string; alt: string; width?: number; height?: number } | undefined;
+      return img ? (
+        <div class="rounded-2xl overflow-hidden shadow-2xl border border-gray-200 max-w-5xl mx-auto">
+          <img src={img.src} alt={img.alt} width={img.width} height={img.height} class="w-full" loading="lazy" />
+        </div>
+      ) : null;
+    })()}
+  </div>
+</section>

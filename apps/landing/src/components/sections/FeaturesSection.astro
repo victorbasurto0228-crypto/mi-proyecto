@@ -1,0 +1,51 @@
+---
+import type { ComponentNode } from '../../types/page-schema';
+import ComponentRenderer from '../ComponentRenderer.astro';
+
+export interface Props {
+  components: ComponentNode[];
+}
+
+const { components } = Astro.props;
+
+const heading = components.find(c => c.type === 'heading');
+const subtitle = components.find(c => c.type === 'paragraph');
+const grid = components.find(c => c.type === 'grid');
+const cards = (grid?.children ?? []).filter(c => c.visible).sort((a, b) => a.order - b.order);
+---
+
+<section id="features" class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    {heading && (
+      <div class="text-center mb-4 text-3xl font-bold text-gray-900">
+        <ComponentRenderer node={heading} />
+      </div>
+    )}
+    {subtitle && (
+      <div class="text-center mb-16 text-gray-500 text-lg max-w-2xl mx-auto">
+        <ComponentRenderer node={subtitle} />
+      </div>
+    )}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {cards.map(card => {
+        const cardChildren = (card.children ?? []).filter(c => c.visible).sort((a, b) => a.order - b.order);
+        const icon = cardChildren.find(c => c.type === 'icon');
+        const title = cardChildren.find(c => c.type === 'heading');
+        const desc = cardChildren.find(c => c.type === 'paragraph');
+        return (
+          <div class="bg-gray-50 rounded-2xl p-8 flex flex-col gap-4 hover:shadow-md transition">
+            {icon && (
+              <span class="text-4xl">{String(icon.value ?? '')}</span>
+            )}
+            {title && (
+              <h3 class="text-xl font-semibold text-gray-900">{String(title.value ?? '')}</h3>
+            )}
+            {desc && (
+              <p class="text-gray-500">{String(desc.value ?? '')}</p>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</section>

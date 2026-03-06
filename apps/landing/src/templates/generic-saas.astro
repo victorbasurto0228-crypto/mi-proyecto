@@ -1,0 +1,15 @@
+---
+import type { PageSchema } from '../types/page-schema';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageRenderer from '../components/PageRenderer.astro';
+
+export interface Props {
+  schema: PageSchema;
+}
+
+const { schema } = Astro.props;
+---
+
+<BaseLayout seo={schema.seo} theme={schema.theme}>
+  <PageRenderer schema={schema} />
+</BaseLayout>

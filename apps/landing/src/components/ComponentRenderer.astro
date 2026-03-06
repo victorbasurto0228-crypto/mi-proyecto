@@ -1,0 +1,151 @@
+---
+import type { Section, ComponentNode } from '../types/page-schema';
+import { typographyToClasses, colorToInlineStyle } from '../utils/typography-to-tailwind';
+
+export interface Props {
+  node: ComponentNode;
+}
+
+const { node } = Astro.props;
+
+function getStringValue(val: unknown): string {
+  if (typeof val === 'string') return val;
+  if (typeof val === 'number' || typeof val === 'boolean') return String(val);
+  return '';
+}
+
+function getImageValue(val: unknown): { src: string; alt: string; width?: number; height?: number } | null {
+  if (val && typeof val === 'object' && 'src' in val) {
+    return val as { src: string; alt: string; width?: number; height?: number };
+  }
+  return null;
+}
+
+const typoClasses = typographyToClasses(node.typography);
+const colorStyle = colorToInlineStyle(node.color);
+const visibleChildren = (node.children ?? [])
+  .filter(c => c.visible)
+  .sort((a, b) => a.order - b.order);
+---
+
+{node.visible && (
+  <>
+    {(node.type === 'text' || node.type === 'paragraph') && (
+      <p class={`${typoClasses}`} style={colorStyle || undefined}>
+        {getStringValue(node.value)}
+      </p>
+    )}
+
+    {node.type === 'heading' && (
+      <h2 class={`${typoClasses}`} style={colorStyle || undefined}>
+        {getStringValue(node.value)}
+      </h2>
+    )}
+
+    {node.type === 'badge' && (
+      <span class={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-700 ${typoClasses}`} style={colorStyle || undefined}>
+        {getStringValue(node.value)}
+      </span>
+    )}
+
+    {node.type === 'button' && (
+      <a
+        href={node.link?.href ?? '#'}
+        target={node.link?.target ?? '_self'}
+        rel={node.link?.rel}
+        aria-label={node.link?.ariaLabel}
+        class={`inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold transition-colors ${typoClasses}`}
+        style={colorStyle || "background-color: var(--color-primary); color: white;"}
+      >
+        {getStringValue(node.value)}
+      </a>
+    )}
+
+    {node.type === 'icon' && (
+      <span class={`text-2xl ${typoClasses}`} style={colorStyle || undefined} aria-hidden="true">
+        {getStringValue(node.value)}
+      </span>
+    )}
+
+    {node.type === 'image' && (() => {
+      const img = getImageValue(node.value);
+      return img ? (
+        <img
+          src={img.src}
+          alt={img.alt}
+          width={img.width}
+          height={img.height}
+          class={`${typoClasses}`}
+          style={colorStyle || undefined}
+          loading="lazy"
+        />
+      ) : null;
+    })()}
+
+    {node.type === 'nav-item' && (
+      <a
+        href={node.link?.href ?? '#'}
+        target={node.link?.target ?? '_self'}
+        class={`text-gray-600 hover:text-gray-900 font-medium transition-colors ${typoClasses}`}
+        style={colorStyle || undefined}
+      >
+        {getStringValue(node.value)}
+      </a>
+    )}
+
+    {node.type === 'social-link' && (
+      <a
+        href={node.link?.href ?? '#'}
+        target={node.link?.target ?? '_blank'}
+        rel={node.link?.rel ?? 'noopener noreferrer'}
+        aria-label={node.link?.ariaLabel ?? getStringValue(node.value)}
+        class={`text-gray-500 hover:text-gray-700 transition-colors ${typoClasses}`}
+        style={colorStyle || undefined}
+      >
+        {getStringValue(node.value)}
+      </a>
+    )}
+
+    {(node.type === 'list' || node.type === 'grid' || node.type === 'group') && (
+      <div class={node.type === 'grid' ? 'grid grid-cols-1 md:grid-cols-3 gap-8' : 'flex flex-col gap-4'}>
+        {visibleChildren.map(child => (
+          <Astro.self node={child} />
+        ))}
+      </div>
+    )}
+
+    {(node.type === 'feature-card') && (
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex flex-col gap-3">
+        {visibleChildren.map(child => (
+          <Astro.self node={child} />
+        ))}
+      </div>
+    )}
+
+    {(node.type === 'testimonial-card') && (
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        {visibleChildren.map(child => (
+          <div class={child.type === 'image' ? 'w-12 h-12 rounded-full overflow-hidden' : ''}>
+            <Astro.self node={child} />
+          </div>
+        ))}
+      </div>
+    )}
+
+    {(node.type === 'pricing-card') && (
+      <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-200 flex flex-col gap-4">
+        {visibleChildren.map(child => (
+          <Astro.self node={child} />
+        ))}
+      </div>
+    )}
+
+    {(node.type === 'card') && (
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        {visibleChildren.map(child => (
+          <Astro.self node={child} />
+        ))}
+      </div>
+    )}
+  </>
+)}
