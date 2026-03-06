@@ -1,0 +1,56 @@
+---
+import type { SeoMeta, ThemeConfig } from '../types/page-schema';
+
+export interface Props {
+  seo?: SeoMeta;
+  theme?: ThemeConfig;
+}
+
+const { seo, theme } = Astro.props;
+const title = seo?.title ?? 'Landing Page';
+const description = seo?.description ?? '';
+const ogImage = seo?.ogImage ?? '';
+const canonical = seo?.canonical ?? Astro.url.href;
+
+const primaryFont = theme?.primaryFont ?? 'Inter';
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {seo?.noIndex && <meta name="robots" content="noindex, nofollow" />}
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href={`https://fonts.googleapis.com/css2?family=${primaryFont.replace(' ', '+')}:wght@400;500;600;700;800&display=swap`} rel="stylesheet" />
+    <style define:vars={{
+      primaryColor: theme?.primaryColor ?? '#6366f1',
+      secondaryColor: theme?.secondaryColor ?? '#8b5cf6',
+      accentColor: theme?.accentColor ?? '#f59e0b',
+      backgroundColor: theme?.backgroundColor ?? '#ffffff',
+      textColor: theme?.textColor ?? '#111827',
+    }}>
+      :root {
+        --color-primary: var(--primaryColor);
+        --color-secondary: var(--secondaryColor);
+        --color-accent: var(--accentColor);
+        --color-bg: var(--backgroundColor);
+        --color-text: var(--textColor);
+        font-family: 'Inter', system-ui, sans-serif;
+      }
+      body {
+        background-color: var(--color-bg);
+        color: var(--color-text);
+      }
+    </style>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

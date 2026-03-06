@@ -1,0 +1,33 @@
+---
+import type { ComponentNode } from '../../types/page-schema';
+
+export interface Props {
+  components: ComponentNode[];
+}
+
+const { components } = Astro.props;
+
+const heading = components.find(c => c.type === 'heading');
+const desc = components.find(c => c.type === 'paragraph');
+const button = components.find(c => c.type === 'button');
+---
+
+<section id="cta" class="py-20" style="background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%)">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    {heading && (
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">{String(heading.value ?? '')}</h2>
+    )}
+    {desc && (
+      <p class="text-indigo-100 text-lg mb-10 max-w-2xl mx-auto">{String(desc.value ?? '')}</p>
+    )}
+    {button && (
+      <a
+        href={button.link?.href ?? '#'}
+        class="inline-flex items-center justify-center px-10 py-4 rounded-xl bg-white font-bold text-lg shadow-lg hover:bg-gray-50 transition"
+        style="color: var(--color-primary)"
+      >
+        {String(button.value ?? '')}
+      </a>
+    )}
+  </div>
+</section>

@@ -1,0 +1,17 @@
+---
+import type { PageSchema } from '../types/page-schema';
+import SectionRenderer from './SectionRenderer.astro';
+
+export interface Props {
+  schema: PageSchema;
+}
+
+const { schema } = Astro.props;
+const sections = schema.sections
+  .filter(s => s.visible)
+  .sort((a, b) => a.order - b.order);
+---
+
+{sections.map(section => (
+  <SectionRenderer section={section} />
+))}

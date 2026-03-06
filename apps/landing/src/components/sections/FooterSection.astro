@@ -1,0 +1,33 @@
+---
+import type { ComponentNode } from '../../types/page-schema';
+
+export interface Props {
+  components: ComponentNode[];
+}
+
+const { components } = Astro.props;
+
+const copyright = components.find(c => c.type === 'text');
+const socialsList = components.find(c => c.type === 'list');
+const socials = (socialsList?.children ?? []).filter(c => c.visible).sort((a, b) => a.order - b.order);
+---
+
+<footer class="bg-gray-900 text-gray-400 py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <p class="text-sm">{String(copyright?.value ?? '')}</p>
+    {socials.length > 0 && (
+      <div class="flex items-center gap-6">
+        {socials.map(s => (
+          <a
+            href={s.link?.href ?? '#'}
+            target={s.link?.target ?? '_blank'}
+            rel={s.link?.rel ?? 'noopener noreferrer'}
+            class="text-gray-400 hover:text-white transition text-sm font-medium"
+          >
+            {String(s.value ?? '')}
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+</footer>
