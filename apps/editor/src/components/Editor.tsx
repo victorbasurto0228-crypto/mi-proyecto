@@ -1,20 +1,34 @@
 import { useRef, useState } from 'react';
 import { usePageSchema } from '../hooks/usePageSchema';
 import EditorPanel from './EditorPanel';
-import SectionList from './SectionList';
-import PreviewFrame, { type PreviewFrameHandle } from './PreviewFrame';
+import ThemeEditor from './ThemeEditor';
+import SeoEditor from './SeoEditor';
+import PreviewFrame, { type PreviewFrameHandle, type DeviceSize } from './PreviewFrame';
 
 interface EditorProps {
   tenantId: string;
 }
 
-type Tab = 'content' | 'sections';
+type Tab = 'content' | 'theme' | 'seo';
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'content', label: 'Content' },
+  { id: 'theme', label: 'Theme' },
+  { id: 'seo', label: 'SEO' },
+];
+
+const DEVICES: { id: DeviceSize; label: string; icon: string }[] = [
+  { id: 'desktop', label: 'Desktop', icon: '🖥' },
+  { id: 'tablet', label: 'Tablet', icon: '📱' },
+  { id: 'mobile', label: 'Mobile', icon: '📲' },
+];
 
 export default function Editor({ tenantId }: EditorProps) {
   const { schema, loading, saving, error, updateSchema, saveSchema } = usePageSchema(tenantId);
   const previewRef = useRef<PreviewFrameHandle>(null);
   const [tab, setTab] = useState<Tab>('content');
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [deviceSize, setDeviceSize] = useState<DeviceSize>('desktop');
 
   const handleSave = async () => {
     await saveSchema();
@@ -69,15 +83,17 @@ export default function Editor({ tenantId }: EditorProps) {
 
         {/* Tabs */}
         <div className="flex border-b border-gray-200">
-          {(['content', 'sections'] as const).map(t => (
+          {TABS.map(t => (
             <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`flex-1 py-2 text-xs font-medium capitalize transition ${
-                tab === t ? 'border-b-2 border-indigo-500 text-indigo-600' : 'text-gray-500 hover:text-gray-700'
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={`flex-1 py-2 text-xs font-medium transition ${
+                tab === t.id
+                  ? 'border-b-2 border-indigo-500 text-indigo-600'
+                  : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              {t}
+              {t.label}
             </button>
           ))}
         </div>
@@ -87,8 +103,11 @@ export default function Editor({ tenantId }: EditorProps) {
           {schema && tab === 'content' && (
             <EditorPanel schema={schema} onUpdate={updateSchema} />
           )}
-          {schema && tab === 'sections' && (
-            <SectionList schema={schema} onUpdate={updateSchema} />
+          {schema && tab === 'theme' && (
+            <ThemeEditor schema={schema} onUpdate={updateSchema} />
+          )}
+          {schema && tab === 'seo' && (
+            <SeoEditor schema={schema} onUpdate={updateSchema} />
           )}
         </div>
 
@@ -102,24 +121,36 @@ export default function Editor({ tenantId }: EditorProps) {
 
       {/* Preview */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        {/* Preview toolbar */}
-        <div className="h-10 bg-white border-b border-gray-200 flex items-center px-4 gap-3">
-          <span className="text-xs text-gray-400">Preview</span>
-          <div className="flex-1 flex items-center bg-gray-100 rounded px-2 py-1">
-            <span className="text-xs text-gray-500 font-mono truncate">
-              http://localhost:4321/preview?tenant={tenantId}
-            </span>
+        {/* Device switcher toolbar */}
+        <div className="h-11 bg-white border-b border-gray-200 flex items-center justify-between px-4">
+          <span className="text-xs font-medium text-gray-500">Preview</span>
+          <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+            {DEVICES.map(d => (
+              <button
+                key={d.id}
+                onClick={() => setDeviceSize(d.id)}
+                title={d.label}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition ${
+                  deviceSize === d.id
+                    ? 'bg-white text-indigo-600 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <span>{d.icon}</span>
+                <span className="hidden sm:inline">{d.label}</span>
+              </button>
+            ))}
           </div>
           <button
             onClick={() => previewRef.current?.reload()}
-            className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1 rounded hover:bg-gray-100"
+            className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1 rounded hover:bg-gray-100 transition"
             title="Reload preview"
           >
             ↻ Reload
           </button>
         </div>
         <div className="flex-1 overflow-hidden">
-          <PreviewFrame ref={previewRef} tenantId={tenantId} />
+          <PreviewFrame ref={previewRef} tenantId={tenantId} deviceSize={deviceSize} />
         </div>
       </main>
     </div>
