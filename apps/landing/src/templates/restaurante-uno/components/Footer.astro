@@ -1,0 +1,13 @@
+---
+import type { Section } from '../../../types/page-schema';
+import FooterSection from '../../../components/sections/FooterSection.astro';
+
+export interface Props {
+  section: Section;
+}
+
+const { section } = Astro.props;
+const comps = section.components.filter(c => c.visible).sort((a, b) => a.order - b.order);
+---
+
+<FooterSection components={comps} />

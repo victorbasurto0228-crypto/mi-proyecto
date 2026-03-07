@@ -1,0 +1,66 @@
+---
+import type { Section } from '../../../types/page-schema';
+
+export interface Props {
+  section: Section;
+}
+
+const { section } = Astro.props;
+const comps = section.components.filter(c => c.visible).sort((a, b) => a.order - b.order);
+
+const heading = comps.find(c => c.type === 'heading');
+const subtitle = comps.find(c => c.type === 'paragraph');
+const itemsList = comps.find(c => c.type === 'list');
+const items = (itemsList?.children ?? []).filter(c => c.visible).sort((a, b) => a.order - b.order);
+---
+
+<section id="menu" class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    {heading && (
+      <h2 class="text-4xl font-extrabold text-center mb-3" style="color: var(--color-text)" data-component-id={heading.id}>
+        {String(heading.value ?? '')}
+      </h2>
+    )}
+    {subtitle && (
+      <p class="text-center text-gray-500 text-lg mb-16" data-component-id={subtitle.id}>
+        {String(subtitle.value ?? '')}
+      </p>
+    )}
+
+    <div class="flex flex-wrap justify-center gap-8">
+      {items.map(item => {
+        const children = (item.children ?? []).filter(c => c.visible).sort((a, b) => a.order - b.order);
+        const imgNode = children.find(c => c.type === 'image');
+        const nameNode = children.find(c => c.type === 'heading');
+        const descNode = children.find(c => c.type === 'paragraph');
+        const priceNode = children.find(c => c.type === 'text');
+        const imgVal = imgNode?.value as { src: string; alt: string; width?: number; height?: number } | undefined;
+        return (
+          <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden w-full sm:w-72 lg:w-80 flex flex-col">
+            {imgVal && (
+              <img src={imgVal.src} alt={imgVal.alt} width={imgVal.width} height={imgVal.height}
+                   class="w-full h-48 object-cover" loading="lazy" data-component-id={imgNode?.id} />
+            )}
+            <div class="p-6 flex flex-col gap-2 flex-1">
+              {nameNode && (
+                <h3 class="text-xl font-bold" style="color: var(--color-text)" data-component-id={nameNode.id}>
+                  {String(nameNode.value ?? '')}
+                </h3>
+              )}
+              {descNode && (
+                <p class="text-gray-500 text-sm flex-1" data-component-id={descNode.id}>
+                  {String(descNode.value ?? '')}
+                </p>
+              )}
+              {priceNode && (
+                <p class="text-lg font-bold mt-2" style="color: var(--color-primary)" data-component-id={priceNode.id}>
+                  {String(priceNode.value ?? '')}
+                </p>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</section>

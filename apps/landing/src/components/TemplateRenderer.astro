@@ -1,0 +1,24 @@
+---
+// TemplateRenderer.astro – Routes to the correct template based on schema.templateId.
+// Each template renders the full page content (sections). BaseLayout is applied
+// by the calling page (index.astro / preview.astro) so that preview.astro can
+// inject PreviewListener inside the body.
+import type { PageSchema } from '../types/page-schema';
+import { resolveTemplateId } from '../lib/types';
+import PageRenderer from './PageRenderer.astro';
+import RestauranteUno from '../templates/restaurante-uno/index.astro';
+import OrganizadorEventos from '../templates/organizador-eventos/index.astro';
+
+export interface Props {
+  schema: PageSchema;
+}
+
+const { schema } = Astro.props;
+const templateId = resolveTemplateId(schema.templateId);
+---
+
+{templateId === 'restaurante-uno' && <RestauranteUno schema={schema} />}
+{templateId === 'organizador-eventos' && <OrganizadorEventos schema={schema} />}
+{(templateId !== 'restaurante-uno' && templateId !== 'organizador-eventos') && (
+  <PageRenderer schema={schema} />
+)}

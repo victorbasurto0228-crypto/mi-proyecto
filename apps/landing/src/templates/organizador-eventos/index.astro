@@ -1,0 +1,33 @@
+---
+// templates/organizador-eventos/index.astro – Event organizer template content renderer
+import type { PageSchema } from '../../types/page-schema';
+import Hero from './components/Hero.astro';
+import Services from './components/Services.astro';
+import Gallery from './components/Gallery.astro';
+import Testimonials from './components/Testimonials.astro';
+import Contact from './components/Contact.astro';
+import Footer from './components/Footer.astro';
+import SectionRenderer from '../../components/SectionRenderer.astro';
+
+export interface Props {
+  schema: PageSchema;
+}
+
+const { schema } = Astro.props;
+const sections = schema.sections.filter(s => s.visible).sort((a, b) => a.order - b.order);
+---
+
+{sections.map(section => (
+  <>
+    {section.type === 'hero' && <Hero section={section} />}
+    {section.type === 'services' && <Services section={section} />}
+    {section.type === 'gallery' && <Gallery section={section} />}
+    {section.type === 'testimonials' && <Testimonials section={section} />}
+    {section.type === 'contact' && <Contact section={section} />}
+    {section.type === 'footer' && <Footer section={section} />}
+    {(section.type !== 'hero' && section.type !== 'services' && section.type !== 'gallery' &&
+      section.type !== 'testimonials' && section.type !== 'contact' && section.type !== 'footer') && (
+      <SectionRenderer section={section} />
+    )}
+  </>
+))}

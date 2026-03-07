@@ -1,0 +1,36 @@
+---
+// templates/default/components/Pricing.astro – Pricing section for the default landing
+---
+
+<section class="py-20 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl font-bold text-gray-900 text-center mb-4">Simple, transparent pricing</h2>
+    <p class="text-center text-gray-500 text-lg mb-16">Start for free, scale as you grow.</p>
+    <div class="flex flex-wrap justify-center gap-8 items-start">
+      {[
+        { name: 'Starter', price: 'Free', features: ['1 tenant', '3 pages', 'Basic templates', 'Community support'], cta: 'Get started free', href: '/app', highlight: false },
+        { name: 'Pro', price: '$29/mo', features: ['10 tenants', 'Unlimited pages', 'All templates', 'Priority support', 'Custom domains'], cta: 'Start free trial', href: '/app', highlight: true },
+        { name: 'Enterprise', price: '$99/mo', features: ['Unlimited tenants', 'Unlimited pages', 'Custom templates', '24/7 support', 'SSO & SAML', 'SLA guarantee'], cta: 'Contact sales', href: '/app', highlight: false },
+      ].map(plan => (
+        <div class={`rounded-2xl p-8 flex flex-col gap-6 border w-full sm:w-72 ${plan.highlight ? 'shadow-2xl border-indigo-400' : 'border-gray-200 shadow-sm bg-white'}`}
+             style={plan.highlight ? 'background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white;' : ''}>
+          <h3 class={`text-xl font-bold ${plan.highlight ? 'text-white' : 'text-gray-900'}`}>{plan.name}</h3>
+          <p class={`text-4xl font-extrabold ${plan.highlight ? 'text-white' : 'text-gray-900'}`}>{plan.price}</p>
+          <ul class="flex flex-col gap-2">
+            {plan.features.map(f => (
+              <li class={`flex items-center gap-2 text-sm ${plan.highlight ? 'text-indigo-100' : 'text-gray-600'}`}>
+                <span class={plan.highlight ? 'text-white' : 'text-indigo-500'}>✓</span>
+                {f}
+              </li>
+            ))}
+          </ul>
+          <a href={plan.href}
+             class={`mt-auto text-center py-3 px-6 rounded-xl font-semibold transition ${plan.highlight ? 'bg-white text-indigo-600 hover:bg-indigo-50' : 'text-white hover:opacity-90'}`}
+             style={!plan.highlight ? 'background-color: var(--color-primary)' : ''}>
+            {plan.cta}
+          </a>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

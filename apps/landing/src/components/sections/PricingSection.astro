@@ -27,7 +27,7 @@ const highlightIndex = 1; // middle card is highlighted
         <p>{String(subtitle.value ?? '')}</p>
       </div>
     )}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+    <div class="flex flex-wrap justify-center gap-8 items-start">
       {cards.map((card, i) => {
         const children = (card.children ?? []).filter(c => c.visible).sort((a, b) => a.order - b.order);
         const name = children.find(c => c.id.includes('name'));
@@ -38,7 +38,7 @@ const highlightIndex = 1; // middle card is highlighted
         const featuresArr = featuresText.split('\n').filter(Boolean);
         const isHighlighted = i === highlightIndex;
         return (
-          <div class={`rounded-2xl p-8 flex flex-col gap-6 border ${isHighlighted ? 'shadow-2xl border-indigo-400 scale-105' : 'border-gray-200 shadow-sm'}`}
+          <div class={`rounded-2xl p-8 flex flex-col gap-6 border w-full sm:w-64 lg:w-72 ${isHighlighted ? 'shadow-2xl border-indigo-400' : 'border-gray-200 shadow-sm'}`}
                style={isHighlighted ? 'background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white;' : ''}>
             {name && (
               <h3 class={`text-xl font-bold ${isHighlighted ? 'text-white' : 'text-gray-900'}`}>{String(name.value ?? '')}</h3>

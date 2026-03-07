@@ -1,0 +1,31 @@
+---
+// templates/restaurante-uno/index.astro – Restaurant template content renderer
+import type { PageSchema } from '../../types/page-schema';
+import Hero from './components/Hero.astro';
+import Menu from './components/Menu.astro';
+import About from './components/About.astro';
+import Contact from './components/Contact.astro';
+import Footer from './components/Footer.astro';
+import SectionRenderer from '../../components/SectionRenderer.astro';
+
+export interface Props {
+  schema: PageSchema;
+}
+
+const { schema } = Astro.props;
+const sections = schema.sections.filter(s => s.visible).sort((a, b) => a.order - b.order);
+---
+
+{sections.map(section => (
+  <>
+    {section.type === 'hero' && <Hero section={section} />}
+    {section.type === 'menu' && <Menu section={section} />}
+    {section.type === 'about' && <About section={section} />}
+    {section.type === 'contact' && <Contact section={section} />}
+    {section.type === 'footer' && <Footer section={section} />}
+    {(section.type !== 'hero' && section.type !== 'menu' && section.type !== 'about' &&
+      section.type !== 'contact' && section.type !== 'footer') && (
+      <SectionRenderer section={section} />
+    )}
+  </>
+))}
