@@ -29,8 +29,13 @@ export function getEditableFields(schema: PageSchema): ComponentNode[] {
 
 function collectEditable(nodes: ComponentNode[], result: ComponentNode[]): void {
   for (const node of nodes) {
-    if (node.editable) result.push(node);
-    if (node.children) collectEditable(node.children, result);
+    if (node.repeatable) {
+      // Include the repeatable container itself; FieldEditor handles its children
+      result.push(node);
+    } else {
+      if (node.editable) result.push(node);
+      if (node.children) collectEditable(node.children, result);
+    }
   }
 }
 

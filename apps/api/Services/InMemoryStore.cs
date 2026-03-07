@@ -691,6 +691,21 @@ public class InMemoryStore
                             Label = "Navegación",
                             Path = "header.nav",
                             Editable = false,
+                            Repeatable = true,
+                            MinItems = 1,
+                            MaxItems = 8,
+                            RepeatableTemplate = new ComponentNode
+                            {
+                                Id = "em-nav-item-tpl",
+                                Type = "nav-item",
+                                Order = 0,
+                                Visible = true,
+                                Label = "Nav Item",
+                                Path = "header.nav[*]",
+                                Editable = true,
+                                Value = "Link",
+                                Link = new LinkConfig { Href = "#", Target = "_self" }
+                            },
                             Children = new List<ComponentNode>
                             {
                                 new ComponentNode { Id = "em-nav-1", Type = "nav-item", Order = 0, Visible = true, Label = "Inicio", Path = "header.nav[0]", Editable = true, Value = "Inicio", Link = new LinkConfig { Href = "#hero", Target = "_self" } },
@@ -718,7 +733,36 @@ public class InMemoryStore
                         new ComponentNode { Id = "em-hero-title", Type = "heading", Order = 1, Visible = true, Label = "Título", Path = "hero.title", Editable = true, Value = "Organizamos tus momentos más especiales", Typography = new TypographyConfig { FontSize = "5xl", FontWeight = "bold", TextAlign = "center" } },
                         new ComponentNode { Id = "em-hero-subtitle", Type = "paragraph", Order = 2, Visible = true, Label = "Subtítulo", Path = "hero.subtitle", Editable = true, Value = "Bodas, quinceañeras, eventos corporativos y celebraciones de vida. Convertimos tus sueños en experiencias únicas e inolvidables.", Typography = new TypographyConfig { FontSize = "xl", TextAlign = "center" } },
                         new ComponentNode { Id = "em-hero-cta", Type = "button", Order = 3, Visible = true, Label = "CTA Principal", Path = "hero.cta", Editable = true, Value = "Solicitar cotización", Link = new LinkConfig { Href = "#contact", Target = "_self" } },
-                        new ComponentNode { Id = "em-hero-image", Type = "image", Order = 4, Visible = true, Label = "Imagen Principal", Path = "hero.image", Editable = true, Value = new ImageValue { Src = "https://placehold.co/1200x500?text=Eventos+MX+Hero", Alt = "Evento de bodas Eventos MX", Width = 1200, Height = 500 } }
+                        new ComponentNode
+                        {
+                            Id = "em-hero-carousel",
+                            Type = "list",
+                            Order = 4,
+                            Visible = true,
+                            Label = "Imágenes del Hero",
+                            Path = "hero.images",
+                            Editable = false,
+                            Repeatable = true,
+                            MinItems = 1,
+                            MaxItems = 6,
+                            RepeatableTemplate = new ComponentNode
+                            {
+                                Id = "em-hero-img-tpl",
+                                Type = "image",
+                                Order = 0,
+                                Visible = true,
+                                Label = "Imagen",
+                                Path = "hero.images[*]",
+                                Editable = true,
+                                Value = new ImageValue { Src = "https://placehold.co/1200x500?text=Nuevo+Evento", Alt = "Evento", Width = 1200, Height = 500 }
+                            },
+                            Children = new List<ComponentNode>
+                            {
+                                new ComponentNode { Id = "em-hero-img-1", Type = "image", Order = 0, Visible = true, Label = "Boda", Path = "hero.images[0]", Editable = true, Value = new ImageValue { Src = "https://placehold.co/1200x500?text=Bodas+Eventos+MX", Alt = "Boda elegante Eventos MX", Width = 1200, Height = 500 } },
+                                new ComponentNode { Id = "em-hero-img-2", Type = "image", Order = 1, Visible = true, Label = "XV Años", Path = "hero.images[1]", Editable = true, Value = new ImageValue { Src = "https://placehold.co/1200x500?text=XV+Anos+Eventos+MX", Alt = "Quinceañera Eventos MX", Width = 1200, Height = 500 } },
+                                new ComponentNode { Id = "em-hero-img-3", Type = "image", Order = 2, Visible = true, Label = "Corporativo", Path = "hero.images[2]", Editable = true, Value = new ImageValue { Src = "https://placehold.co/1200x500?text=Eventos+Corporativos", Alt = "Evento corporativo Eventos MX", Width = 1200, Height = 500 } }
+                            }
+                        }
                     }
                 },
 
@@ -816,6 +860,26 @@ public class InMemoryStore
                             Label = "Testimonios",
                             Path = "testimonials.items",
                             Editable = false,
+                            Repeatable = true,
+                            MinItems = 1,
+                            MaxItems = 12,
+                            RepeatableTemplate = new ComponentNode
+                            {
+                                Id = "em-test-card-tpl",
+                                Type = "testimonial-card",
+                                Order = 0,
+                                Visible = true,
+                                Label = "Testimonio",
+                                Path = "testimonials.items[*]",
+                                Editable = true,
+                                Children = new List<ComponentNode>
+                                {
+                                    new ComponentNode { Id = "em-tc-quote-tpl", Type = "paragraph", Order = 0, Visible = true, Label = "Cita", Path = "testimonials.items[*].quote", Editable = true, Value = "Un evento perfecto gracias a Eventos MX." },
+                                    new ComponentNode { Id = "em-tc-avatar-tpl", Type = "image", Order = 1, Visible = true, Label = "Foto", Path = "testimonials.items[*].avatar", Editable = true, Value = new ImageValue { Src = "https://placehold.co/80x80?text=AV", Alt = "Avatar", Width = 80, Height = 80 } },
+                                    new ComponentNode { Id = "em-tc-name-tpl", Type = "text", Order = 2, Visible = true, Label = "Nombre", Path = "testimonials.items[*].name", Editable = true, Value = "Nombre Cliente" },
+                                    new ComponentNode { Id = "em-tc-role-tpl", Type = "text", Order = 3, Visible = true, Label = "Rol", Path = "testimonials.items[*].role", Editable = true, Value = "Tipo de Evento" }
+                                }
+                            },
                             Children = new List<ComponentNode>
                             {
                                 new ComponentNode { Id = "em-t1", Type = "testimonial-card", Order = 0, Visible = true, Label = "Testimonio 1", Path = "testimonials.items[0]", Editable = true, Children = new List<ComponentNode> {

@@ -1,5 +1,5 @@
 import type { ComponentNode, ImageValue } from '../types/page-schema';
-import { updateValue } from '../utils/schema-helpers';
+import { updateValue, addRepeatableItem, removeRepeatableItem } from '../utils/schema-helpers';
 import type { PageSchema } from '../types/page-schema';
 import ColorPicker from './ColorPicker';
 import TypographyEditor from './TypographyEditor';
@@ -68,6 +68,51 @@ export default function FieldEditor({ node, schema, onUpdate }: FieldEditorProps
           value={node.value as ImageValue | string | undefined}
           onChange={handleValueChange}
         />
+      )}
+
+      {/* Repeatable list node – Add / Remove items */}
+      {node.repeatable && (
+        <div className="flex flex-col gap-2">
+          {node.maxItems && (
+            <span className="text-[10px] text-gray-400">
+              {(node.children ?? []).length} / {node.maxItems} max
+            </span>
+          )}
+          {(node.children ?? []).map((child, idx) => {
+            const subFields = child.children
+              ? child.children.filter(c => c.editable || c.repeatable)
+              : child.editable ? [child] : [];
+            const canRemove = !node.minItems || (node.children ?? []).length > node.minItems;
+            return (
+              <div key={child.id} className="flex flex-col gap-1 p-2 border border-gray-200 rounded bg-gray-50">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-medium text-gray-600">{child.label ?? `Item ${idx + 1}`}</span>
+                  <button
+                    type="button"
+                    onClick={() => onUpdate(removeRepeatableItem(schema, node.id, child.id))}
+                    disabled={!canRemove}
+                    className="text-red-400 hover:text-red-600 disabled:opacity-30 disabled:cursor-not-allowed text-sm leading-none"
+                    title="Eliminar"
+                  >
+                    🗑️
+                  </button>
+                </div>
+                {subFields.map(f => (
+                  <FieldEditor key={f.id} node={f} schema={schema} onUpdate={onUpdate} />
+                ))}
+              </div>
+            );
+          })}
+          {(!node.maxItems || (node.children ?? []).length < node.maxItems) && node.repeatableTemplate && (
+            <button
+              type="button"
+              onClick={() => onUpdate(addRepeatableItem(schema, node.id))}
+              className="text-xs text-indigo-600 hover:text-indigo-800 py-1 px-2 border border-dashed border-indigo-300 rounded hover:bg-indigo-50 transition"
+            >
+              ➕ Add Item
+            </button>
+          )}
+        </div>
       )}
 
       {/* List/grid node with plain text value (e.g. pricing features) */}
