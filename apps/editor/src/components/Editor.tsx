@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { usePageSchema } from '../hooks/usePageSchema';
-import { useAutoSave } from '../hooks/useAutoSave';
 import EditorPanel from './EditorPanel';
 import SectionList from './SectionList';
 import PreviewFrame, { type PreviewFrameHandle } from './PreviewFrame';
@@ -16,12 +15,6 @@ export default function Editor({ tenantId }: EditorProps) {
   const previewRef = useRef<PreviewFrameHandle>(null);
   const [tab, setTab] = useState<Tab>('content');
   const [saveSuccess, setSaveSuccess] = useState(false);
-
-  // Auto-save with 2s debounce after changes
-  useAutoSave(schema, async () => {
-    await saveSchema();
-    previewRef.current?.reload();
-  });
 
   const handleSave = async () => {
     await saveSchema();
