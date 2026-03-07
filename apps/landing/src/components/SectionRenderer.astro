@@ -16,6 +16,13 @@ const { section } = Astro.props;
 const components = section.components
   .filter(c => c.visible)
   .sort((a, b) => a.order - b.order);
+
+// Header-specific layout helpers
+const headerLogo = components.find(c => c.type === 'image');
+const headerNav  = components.find(c => c.type === 'list');
+const headerNavChildren = (headerNav?.children ?? [])
+  .filter(c => c.visible)
+  .sort((a, b) => a.order - b.order);
 ---
 
 {section.visible && (
@@ -23,9 +30,10 @@ const components = section.components
     {section.type === 'header' && (
       <header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          {components.map(c => (
-            <ComponentRenderer node={c} />
-          ))}
+          {headerLogo && <ComponentRenderer node={headerLogo} />}
+          <nav class="flex items-center gap-6">
+            {headerNavChildren.map(c => <ComponentRenderer node={c} />)}
+          </nav>
         </div>
       </header>
     )}

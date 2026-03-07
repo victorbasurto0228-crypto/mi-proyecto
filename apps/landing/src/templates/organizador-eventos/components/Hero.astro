@@ -1,5 +1,5 @@
 ---
-import type { Section } from '../../../types/page-schema';
+import type { Section, ComponentNode } from '../../../types/page-schema';
 
 export interface Props {
   section: Section;
@@ -12,17 +12,61 @@ const badge = comps.find(c => c.type === 'badge');
 const heading = comps.find(c => c.type === 'heading');
 const paragraph = comps.find(c => c.type === 'paragraph');
 const button = comps.find(c => c.type === 'button');
-const image = comps.find(c => c.type === 'image');
-const img = image?.value as { src: string; alt: string; width?: number; height?: number } | undefined;
+
+// Support both a single image and a repeatable list of images (carousel)
+const imageList = comps.find(c => c.type === 'list');
+const singleImage = comps.find(c => c.type === 'image');
+
+const carouselImages: Array<{ src: string; alt: string; width?: number; height?: number }> = [];
+
+if (imageList?.children) {
+  for (const child of imageList.children.filter(c => c.visible).sort((a, b) => a.order - b.order)) {
+    const v = child.value as { src: string; alt: string; width?: number; height?: number } | undefined;
+    if (v?.src) carouselImages.push(v);
+  }
+}
+
+if (carouselImages.length === 0 && singleImage) {
+  const v = singleImage.value as { src: string; alt: string; width?: number; height?: number } | undefined;
+  if (v?.src) carouselImages.push(v);
+}
+
+const isCarousel = carouselImages.length > 1;
+const firstImage = carouselImages[0];
 ---
 
 <section id="hero" class="relative overflow-hidden min-h-screen flex items-center">
-  {img && (
+  {isCarousel ? (
+    <div class="hero-carousel absolute inset-0" id="hero-carousel">
+      <div class="hero-carousel-track" id="hero-carousel-track" style="display:flex;width:100%;height:100%;">
+        {carouselImages.map((img, i) => (
+          <div class="hero-carousel-slide" style="min-width:100%;height:100%;position:relative;flex-shrink:0;">
+            <img src={img.src} alt={img.alt} class="w-full h-full object-cover" loading={i === 0 ? 'eager' : 'lazy'} />
+            <div class="absolute inset-0" style="background: linear-gradient(135deg, rgba(124,58,237,0.85) 0%, rgba(167,139,250,0.7) 100%)"></div>
+          </div>
+        ))}
+      </div>
+      {carouselImages.length > 1 && (
+        <div class="absolute bottom-6 left-0 right-0 flex items-center justify-center gap-2 z-20">
+          {carouselImages.map((_, i) => (
+            <button
+              type="button"
+              class="hero-dot w-2.5 h-2.5 rounded-full bg-white/40 hover:bg-white/80 transition"
+              data-index={i}
+              aria-label={`Slide ${i + 1}`}
+              aria-current={i === 0 ? 'true' : 'false'}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  ) : firstImage ? (
     <div class="absolute inset-0">
-      <img src={img.src} alt={img.alt} class="w-full h-full object-cover" loading="eager" />
+      <img src={firstImage.src} alt={firstImage.alt} class="w-full h-full object-cover" loading="eager" />
       <div class="absolute inset-0" style="background: linear-gradient(135deg, rgba(124,58,237,0.85) 0%, rgba(167,139,250,0.7) 100%)"></div>
     </div>
-  )}
+  ) : null}
+
   <div class="relative z-10 w-full flex flex-col items-center justify-center text-center px-4 py-32">
     {badge && (
       <span class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold mb-6"
@@ -50,3 +94,55 @@ const img = image?.value as { src: string; alt: string; width?: number; height?:
     )}
   </div>
 </section>
+
+{isCarousel && (
+  <style>
+    .hero-carousel { overflow: hidden; }
+    .hero-carousel-track { transition: transform 0.6s ease; }
+    .hero-dot.active { background: rgba(255,255,255,0.9); }
+  </style>
+  <script>
+    (function () {
+      const carousel = document.getElementById('hero-carousel');
+      const track = document.getElementById('hero-carousel-track') as HTMLElement | null;
+      const dots = document.querySelectorAll<HTMLButtonElement>('.hero-dot');
+      if (!track || dots.length < 2) return;
+      let current = 0;
+      const total = dots.length;
+      let intervalId: ReturnType<typeof setInterval> | null = null;
+
+      function goTo(idx: number) {
+        current = (idx + total) % total;
+        track!.style.transform = `translateX(-${current * 100}%)`;
+        dots.forEach((d, i) => {
+          d.classList.toggle('active', i === current);
+          d.setAttribute('aria-current', i === current ? 'true' : 'false');
+        });
+      }
+
+      function startAutoplay() {
+        if (intervalId) return;
+        intervalId = setInterval(() => goTo(current + 1), 5000);
+      }
+
+      function stopAutoplay() {
+        if (intervalId) { clearInterval(intervalId); intervalId = null; }
+      }
+
+      dots.forEach((d, i) => d.addEventListener('click', () => goTo(i)));
+      goTo(0);
+      startAutoplay();
+
+      // Pause on hover / focus
+      carousel?.addEventListener('mouseenter', stopAutoplay);
+      carousel?.addEventListener('focusin', stopAutoplay);
+      carousel?.addEventListener('mouseleave', startAutoplay);
+      carousel?.addEventListener('focusout', startAutoplay);
+
+      // Pause when tab is hidden (Page Visibility API)
+      document.addEventListener('visibilitychange', () => {
+        document.hidden ? stopAutoplay() : startAutoplay();
+      });
+    })();
+  </script>
+)}
