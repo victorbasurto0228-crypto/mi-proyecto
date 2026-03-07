@@ -35,8 +35,7 @@ export function usePageSchema(tenantId: string): UsePageSchemaResult {
     setSaving(true);
     setError(null);
     try {
-      const saved = await savePage(tenantId, schema);
-      setSchema(saved);
+      await savePage(tenantId, schema);
     } catch (e) {
       setError((e as Error).message);
     } finally {

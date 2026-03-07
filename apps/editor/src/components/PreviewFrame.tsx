@@ -1,4 +1,4 @@
-import { useRef, useImperativeHandle, forwardRef } from 'react';
+import { useState, useRef, useImperativeHandle, forwardRef } from 'react';
 
 export interface PreviewFrameHandle {
   reload: () => void;
@@ -11,27 +11,34 @@ interface PreviewFrameProps {
 
 const PreviewFrame = forwardRef<PreviewFrameHandle, PreviewFrameProps>(
   ({ tenantId, previewBase = 'http://localhost:4321' }, ref) => {
+    const [reloadKey, setReloadKey] = useState(0);
     const iframeRef = useRef<HTMLIFrameElement>(null);
+    const previewBaseRef = useRef(previewBase);
+    previewBaseRef.current = previewBase;
 
     useImperativeHandle(ref, () => ({
       reload: () => {
-        if (iframeRef.current?.contentWindow) {
-          iframeRef.current.contentWindow.location.reload();
-        } else if (iframeRef.current) {
-          iframeRef.current.src = iframeRef.current.src;
+        // Send RELOAD postMessage to the current iframe as a secondary reload mechanism
+        try {
+          const origin = new URL(previewBaseRef.current).origin;
+          iframeRef.current?.contentWindow?.postMessage({ type: 'RELOAD' }, origin);
+        } catch {
+          // ignore invalid URL
         }
+        // Increment key to force React to fully remount the iframe (primary reload mechanism)
+        setReloadKey(k => k + 1);
       },
     }));
 
-    const src = `${previewBase}/preview?tenant=${encodeURIComponent(tenantId)}`;
+    const src = `${previewBase}/preview?tenant=${encodeURIComponent(tenantId)}&t=${reloadKey}`;
 
     return (
       <iframe
+        key={reloadKey}
         ref={iframeRef}
         src={src}
         title="Landing Page Preview"
         className="w-full h-full border-0"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
       />
     );
   }
