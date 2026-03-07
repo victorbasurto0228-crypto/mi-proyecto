@@ -31,25 +31,26 @@ const visibleChildren = (node.children ?? [])
 {node.visible && (
   <>
     {(node.type === 'text' || node.type === 'paragraph') && (
-      <p class={`${typoClasses}`} style={colorStyle || undefined}>
+      <p data-component-id={node.id} class={`${typoClasses}`} style={colorStyle || undefined}>
         {getStringValue(node.value)}
       </p>
     )}
 
     {node.type === 'heading' && (
-      <h2 class={`${typoClasses}`} style={colorStyle || undefined}>
+      <h2 data-component-id={node.id} class={`${typoClasses}`} style={colorStyle || undefined}>
         {getStringValue(node.value)}
       </h2>
     )}
 
     {node.type === 'badge' && (
-      <span class={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-700 ${typoClasses}`} style={colorStyle || undefined}>
+      <span data-component-id={node.id} class={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-700 ${typoClasses}`} style={colorStyle || undefined}>
         {getStringValue(node.value)}
       </span>
     )}
 
     {node.type === 'button' && (
       <a
+        data-component-id={node.id}
         href={node.link?.href ?? '#'}
         target={node.link?.target ?? '_self'}
         rel={node.link?.rel}
@@ -62,7 +63,7 @@ const visibleChildren = (node.children ?? [])
     )}
 
     {node.type === 'icon' && (
-      <span class={`text-2xl ${typoClasses}`} style={colorStyle || undefined} aria-hidden="true">
+      <span data-component-id={node.id} class={`text-2xl ${typoClasses}`} style={colorStyle || undefined} aria-hidden="true">
         {getStringValue(node.value)}
       </span>
     )}
@@ -71,6 +72,7 @@ const visibleChildren = (node.children ?? [])
       const img = getImageValue(node.value);
       return img ? (
         <img
+          data-component-id={node.id}
           src={img.src}
           alt={img.alt}
           width={img.width}
@@ -84,6 +86,7 @@ const visibleChildren = (node.children ?? [])
 
     {node.type === 'nav-item' && (
       <a
+        data-component-id={node.id}
         href={node.link?.href ?? '#'}
         target={node.link?.target ?? '_self'}
         class={`text-gray-600 hover:text-gray-900 font-medium transition-colors ${typoClasses}`}
@@ -95,6 +98,7 @@ const visibleChildren = (node.children ?? [])
 
     {node.type === 'social-link' && (
       <a
+        data-component-id={node.id}
         href={node.link?.href ?? '#'}
         target={node.link?.target ?? '_blank'}
         rel={node.link?.rel ?? 'noopener noreferrer'}

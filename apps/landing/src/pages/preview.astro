@@ -1,0 +1,45 @@
+---
+// preview.astro – The editor iframe loads this page to show a live preview.
+// Same as index.astro (for tenants) but always includes PreviewListener
+// for postMessage-based live updates from the editor.
+import type { PageSchema } from '../types/page-schema';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageRenderer from '../components/PageRenderer.astro';
+import PreviewListener from '../components/PreviewListener.astro';
+
+const tenantId = Astro.locals.tenantId ?? Astro.url.searchParams.get('tenant') ?? '';
+
+if (!tenantId) {
+  return Astro.redirect('/');
+}
+
+const apiBase = import.meta.env.API_URL ?? 'http://localhost:5000';
+
+let schema: PageSchema | null = null;
+
+try {
+  const res = await fetch(`${apiBase}/api/tenants/${tenantId}/page`);
+  if (res.ok) {
+    schema = await res.json() as PageSchema;
+  }
+} catch (_e) {
+  // API not available
+}
+
+if (!schema) {
+  return new Response(
+    `<!DOCTYPE html><html><head><title>Preview not found</title></head><body style="font-family:sans-serif;text-align:center;padding:4rem">
+      <h1>Preview unavailable</h1>
+      <p>No page found for tenant <strong>${tenantId}</strong>.</p>
+      <p>Make sure the API is running at <code>localhost:5000</code>.</p>
+      <a href="/">← Home</a>
+    </body></html>`,
+    { status: 404, headers: { 'Content-Type': 'text/html' } }
+  );
+}
+---
+
+<BaseLayout seo={schema.seo} theme={schema.theme}>
+  <PreviewListener />
+  <PageRenderer schema={schema} />
+</BaseLayout>

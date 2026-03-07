@@ -1,0 +1,47 @@
+<!-- PreviewListener: Injected into preview.astro to enable live editor updates via postMessage -->
+<script>
+  (function () {
+    // The trusted editor origin – in dev both Vite and the Astro proxy can be parents.
+    // We allow localhost origins only; adjust if deploying to a fixed domain.
+    function isTrustedOrigin(origin: string): boolean {
+      try {
+        const url = new URL(origin);
+        return url.hostname === 'localhost' || url.hostname === '127.0.0.1';
+      } catch {
+        return false;
+      }
+    }
+
+    // Notify the editor that the preview is ready
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: 'PREVIEW_READY' }, '*');
+    }
+
+    window.addEventListener('message', (event) => {
+      // Validate origin before trusting the message
+      if (!isTrustedOrigin(event.origin)) return;
+
+      const { type, id, value } = event.data ?? {};
+
+      if (type === 'UPDATE_CONTENT') {
+        const el = document.querySelector(`[data-component-id="${id}"]`);
+        if (!el) return;
+
+        if (el.tagName === 'IMG') {
+          if (value && typeof value === 'object' && 'src' in value) {
+            (el as HTMLImageElement).src = (value as { src: string }).src;
+            (el as HTMLImageElement).alt = (value as { alt?: string }).alt ?? '';
+          } else if (typeof value === 'string') {
+            (el as HTMLImageElement).src = value;
+          }
+        } else {
+          el.textContent = typeof value === 'string' ? value : String(value ?? '');
+        }
+      }
+
+      if (type === 'RELOAD') {
+        window.location.reload();
+      }
+    });
+  })();
+</script>

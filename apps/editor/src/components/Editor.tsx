@@ -1,21 +1,27 @@
 import { useRef, useState } from 'react';
 import { usePageSchema } from '../hooks/usePageSchema';
+import { useAutoSave } from '../hooks/useAutoSave';
 import EditorPanel from './EditorPanel';
 import SectionList from './SectionList';
 import PreviewFrame, { type PreviewFrameHandle } from './PreviewFrame';
 
 interface EditorProps {
   tenantId: string;
-  slug?: string;
 }
 
 type Tab = 'content' | 'sections';
 
-export default function Editor({ tenantId, slug = 'index' }: EditorProps) {
-  const { schema, loading, saving, error, updateSchema, saveSchema } = usePageSchema(tenantId, slug);
+export default function Editor({ tenantId }: EditorProps) {
+  const { schema, loading, saving, error, updateSchema, saveSchema } = usePageSchema(tenantId);
   const previewRef = useRef<PreviewFrameHandle>(null);
   const [tab, setTab] = useState<Tab>('content');
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Auto-save with 2s debounce after changes
+  useAutoSave(schema, async () => {
+    await saveSchema();
+    previewRef.current?.reload();
+  });
 
   const handleSave = async () => {
     await saveSchema();
@@ -55,7 +61,7 @@ export default function Editor({ tenantId, slug = 'index' }: EditorProps) {
         <div className="px-4 py-3 border-b border-gray-200 bg-indigo-600 flex items-center justify-between">
           <div>
             <h1 className="text-sm font-bold text-white">LandingCraft</h1>
-            <p className="text-xs text-indigo-200">{tenantId} / {slug}</p>
+            <p className="text-xs text-indigo-200">{tenantId}</p>
           </div>
           <button
             onClick={handleSave}
@@ -108,7 +114,7 @@ export default function Editor({ tenantId, slug = 'index' }: EditorProps) {
           <span className="text-xs text-gray-400">Preview</span>
           <div className="flex-1 flex items-center bg-gray-100 rounded px-2 py-1">
             <span className="text-xs text-gray-500 font-mono truncate">
-              http://localhost:4321?tenant={tenantId}
+              http://localhost:4321/preview?tenant={tenantId}
             </span>
           </div>
           <button
@@ -120,7 +126,7 @@ export default function Editor({ tenantId, slug = 'index' }: EditorProps) {
           </button>
         </div>
         <div className="flex-1 overflow-hidden">
-          <PreviewFrame ref={previewRef} tenantId={tenantId} slug={slug} />
+          <PreviewFrame ref={previewRef} tenantId={tenantId} />
         </div>
       </main>
     </div>
