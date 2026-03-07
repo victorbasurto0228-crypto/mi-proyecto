@@ -1,0 +1,45 @@
+---
+import type { Section } from '../../../types/page-schema';
+
+export interface Props {
+  section: Section;
+}
+
+const { section } = Astro.props;
+const comps = section.components.filter(c => c.visible).sort((a, b) => a.order - b.order);
+
+const heading = comps.find(c => c.type === 'heading');
+const subtitle = comps.find(c => c.type === 'paragraph');
+const texts = comps.filter(c => c.type === 'text');
+const button = comps.find(c => c.type === 'button');
+---
+
+<section id="contact" class="py-20" style="background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%)">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    {heading && (
+      <h2 class="text-4xl font-extrabold text-white mb-4" data-component-id={heading.id}>
+        {String(heading.value ?? '')}
+      </h2>
+    )}
+    {subtitle && (
+      <p class="text-purple-100 text-lg mb-10" data-component-id={subtitle.id}>
+        {String(subtitle.value ?? '')}
+      </p>
+    )}
+    <div class="flex flex-col gap-3 mb-10">
+      {texts.map(t => (
+        <p class="text-purple-100 text-lg font-medium" data-component-id={t.id}>
+          {String(t.value ?? '')}
+        </p>
+      ))}
+    </div>
+    {button && (
+      <a href={button.link?.href ?? '#'}
+         class="inline-flex items-center justify-center px-10 py-4 rounded-xl font-bold text-lg shadow-xl hover:opacity-90 transition"
+         style="background-color: var(--color-accent); color: #1f1035;"
+         data-component-id={button.id}>
+        {String(button.value ?? '')}
+      </a>
+    )}
+  </div>
+</section>

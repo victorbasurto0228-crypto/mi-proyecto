@@ -1,11 +1,11 @@
 ---
 // preview.astro – The editor iframe loads this page to show a live preview.
-// Same as index.astro (for tenants) but always includes PreviewListener
-// for postMessage-based live updates from the editor.
-import type { PageSchema } from '../types/page-schema';
+// Always includes PreviewListener for postMessage-based live updates from the editor.
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PageRenderer from '../components/PageRenderer.astro';
+import TemplateRenderer from '../components/TemplateRenderer.astro';
 import PreviewListener from '../components/PreviewListener.astro';
+import { resolveTenantPage } from '../lib/tenant';
+import { invalidateTenantCache } from '../lib/tenant';
 
 const tenantId = Astro.locals.tenantId ?? Astro.url.searchParams.get('tenant') ?? '';
 
@@ -13,18 +13,10 @@ if (!tenantId) {
   return Astro.redirect('/');
 }
 
-const apiBase = import.meta.env.API_URL ?? 'http://localhost:5000';
+// Invalidate cache on preview so the editor always sees fresh data after a save
+invalidateTenantCache(tenantId);
 
-let schema: PageSchema | null = null;
-
-try {
-  const res = await fetch(`${apiBase}/api/tenants/${tenantId}/page`);
-  if (res.ok) {
-    schema = await res.json() as PageSchema;
-  }
-} catch (_e) {
-  // API not available
-}
+const schema = await resolveTenantPage(tenantId);
 
 if (!schema) {
   return new Response(
@@ -41,5 +33,5 @@ if (!schema) {
 
 <BaseLayout seo={schema.seo} theme={schema.theme}>
   <PreviewListener />
-  <PageRenderer schema={schema} />
+  <TemplateRenderer schema={schema} />
 </BaseLayout>

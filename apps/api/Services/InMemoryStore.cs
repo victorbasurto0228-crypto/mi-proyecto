@@ -25,6 +25,24 @@ public class InMemoryStore
             Category = "saas"
         });
 
+        Templates.Add(new Template
+        {
+            Id = "restaurante-uno",
+            Name = "Restaurante",
+            Description = "Template de landing page para restaurantes con hero, menú, nosotros, contacto y footer.",
+            PreviewImage = "https://placehold.co/800x500?text=Restaurante",
+            Category = "restaurant"
+        });
+
+        Templates.Add(new Template
+        {
+            Id = "organizador-eventos",
+            Name = "Organizador de Eventos",
+            Description = "Template para organizadores de eventos con hero, servicios, galería, testimonios y contacto.",
+            PreviewImage = "https://placehold.co/800x500?text=Organizador+Eventos",
+            Category = "events"
+        });
+
         // Tenants
         Tenants["demo"] = new Tenant
         {
@@ -35,8 +53,28 @@ public class InMemoryStore
             CreatedAt = DateTime.UtcNow
         };
 
+        Tenants["bella-italia"] = new Tenant
+        {
+            Id = "bella-italia",
+            Name = "Bella Italia Ristorante",
+            Subdomain = "bella-italia",
+            Plan = "pro",
+            CreatedAt = DateTime.UtcNow
+        };
+
+        Tenants["eventos-mx"] = new Tenant
+        {
+            Id = "eventos-mx",
+            Name = "Eventos MX",
+            Subdomain = "eventos-mx",
+            Plan = "pro",
+            CreatedAt = DateTime.UtcNow
+        };
+
         // Pages – keyed by tenantId (one page per tenant)
         Pages["demo"] = BuildDemoPage();
+        Pages["bella-italia"] = BuildBellaItaliaPage();
+        Pages["eventos-mx"] = BuildEventosMxPage();
     }
 
     private static PageSchema BuildDemoPage()
@@ -418,4 +456,438 @@ public class InMemoryStore
     }
 
     public string PageKey(string tenantId, string slug) => $"{tenantId}:{slug}";
+
+    private static PageSchema BuildBellaItaliaPage()
+    {
+        return new PageSchema
+        {
+            Id = "bella-italia-index",
+            Slug = "index",
+            TemplateId = "restaurante-uno",
+            TenantId = "bella-italia",
+            Seo = new SeoMeta
+            {
+                Title = "Bella Italia – Ristorante Autentico",
+                Description = "Auténtica cocina italiana en el corazón de la ciudad. Pasta fresca, pizzas artesanales y los mejores vinos italianos.",
+                OgImage = "https://placehold.co/1200x630?text=Bella+Italia"
+            },
+            Theme = new ThemeConfig
+            {
+                PrimaryColor = "#c0392b",
+                SecondaryColor = "#e74c3c",
+                AccentColor = "#f39c12",
+                BackgroundColor = "#fffdf8",
+                TextColor = "#2c1810",
+                PrimaryFont = "Playfair Display",
+                SecondaryFont = "Lato"
+            },
+            Sections = new List<Section>
+            {
+                // ─── HEADER ───────────────────────────────────────────
+                new Section
+                {
+                    Id = "bi-header",
+                    Type = "header",
+                    Order = 0,
+                    Visible = true,
+                    Label = "Header",
+                    Components = new List<ComponentNode>
+                    {
+                        new ComponentNode { Id = "bi-logo", Type = "image", Order = 0, Visible = true, Label = "Logo", Path = "header.logo", Editable = true, Value = new ImageValue { Src = "https://placehold.co/140x45?text=Bella+Italia", Alt = "Bella Italia Logo", Width = 140, Height = 45 } },
+                        new ComponentNode
+                        {
+                            Id = "bi-nav",
+                            Type = "list",
+                            Order = 1,
+                            Visible = true,
+                            Label = "Navegación",
+                            Path = "header.nav",
+                            Editable = false,
+                            Children = new List<ComponentNode>
+                            {
+                                new ComponentNode { Id = "bi-nav-1", Type = "nav-item", Order = 0, Visible = true, Label = "Inicio", Path = "header.nav[0]", Editable = true, Value = "Inicio", Link = new LinkConfig { Href = "#hero", Target = "_self" } },
+                                new ComponentNode { Id = "bi-nav-2", Type = "nav-item", Order = 1, Visible = true, Label = "Menú", Path = "header.nav[1]", Editable = true, Value = "Menú", Link = new LinkConfig { Href = "#menu", Target = "_self" } },
+                                new ComponentNode { Id = "bi-nav-3", Type = "nav-item", Order = 2, Visible = true, Label = "Nosotros", Path = "header.nav[2]", Editable = true, Value = "Nosotros", Link = new LinkConfig { Href = "#about", Target = "_self" } },
+                                new ComponentNode { Id = "bi-nav-4", Type = "nav-item", Order = 3, Visible = true, Label = "Contacto", Path = "header.nav[3]", Editable = true, Value = "Contacto", Link = new LinkConfig { Href = "#contact", Target = "_self" } },
+                                new ComponentNode { Id = "bi-nav-cta", Type = "button", Order = 4, Visible = true, Label = "Reservar", Path = "header.navCta", Editable = true, Value = "Reservar Mesa", Link = new LinkConfig { Href = "#contact", Target = "_self" } }
+                            }
+                        }
+                    }
+                },
+
+                // ─── HERO ─────────────────────────────────────────────
+                new Section
+                {
+                    Id = "bi-hero",
+                    Type = "hero",
+                    Order = 1,
+                    Visible = true,
+                    Label = "Hero",
+                    Components = new List<ComponentNode>
+                    {
+                        new ComponentNode { Id = "bi-hero-badge", Type = "badge", Order = 0, Visible = true, Label = "Badge", Path = "hero.badge", Editable = true, Value = "🍝 Auténtica Cocina Italiana" },
+                        new ComponentNode { Id = "bi-hero-title", Type = "heading", Order = 1, Visible = true, Label = "Título", Path = "hero.title", Editable = true, Value = "Una experiencia gastronómica inigualable", Typography = new TypographyConfig { FontSize = "5xl", FontWeight = "bold", TextAlign = "center" } },
+                        new ComponentNode { Id = "bi-hero-subtitle", Type = "paragraph", Order = 2, Visible = true, Label = "Subtítulo", Path = "hero.subtitle", Editable = true, Value = "Pasta fresca elaborada a diario, pizzas artesanales al horno de leña y los mejores vinos italianos. Ven y descubre el sabor de Italia.", Typography = new TypographyConfig { FontSize = "xl", TextAlign = "center" } },
+                        new ComponentNode { Id = "bi-hero-cta", Type = "button", Order = 3, Visible = true, Label = "Reservar", Path = "hero.cta", Editable = true, Value = "Reservar una mesa", Link = new LinkConfig { Href = "#contact", Target = "_self" } },
+                        new ComponentNode { Id = "bi-hero-image", Type = "image", Order = 4, Visible = true, Label = "Imagen Principal", Path = "hero.image", Editable = true, Value = new ImageValue { Src = "https://placehold.co/1200x500?text=Bella+Italia+Restaurante", Alt = "Interior del restaurante Bella Italia", Width = 1200, Height = 500 } }
+                    }
+                },
+
+                // ─── MENU ─────────────────────────────────────────────
+                new Section
+                {
+                    Id = "bi-menu",
+                    Type = "menu",
+                    Order = 2,
+                    Visible = true,
+                    Label = "Menú",
+                    Components = new List<ComponentNode>
+                    {
+                        new ComponentNode { Id = "bi-menu-title", Type = "heading", Order = 0, Visible = true, Label = "Título", Path = "menu.title", Editable = true, Value = "Nuestro Menú", Typography = new TypographyConfig { FontSize = "3xl", FontWeight = "bold", TextAlign = "center" } },
+                        new ComponentNode { Id = "bi-menu-subtitle", Type = "paragraph", Order = 1, Visible = true, Label = "Subtítulo", Path = "menu.subtitle", Editable = true, Value = "Ingredientes frescos importados directamente de Italia", Typography = new TypographyConfig { TextAlign = "center" } },
+                        new ComponentNode
+                        {
+                            Id = "bi-menu-items",
+                            Type = "list",
+                            Order = 2,
+                            Visible = true,
+                            Label = "Platos",
+                            Path = "menu.items",
+                            Editable = false,
+                            Children = new List<ComponentNode>
+                            {
+                                new ComponentNode { Id = "bi-dish-1", Type = "card", Order = 0, Visible = true, Label = "Tagliatelle al Ragù", Path = "menu.items[0]", Editable = true, Children = new List<ComponentNode> {
+                                    new ComponentNode { Id = "bi-d1-img", Type = "image", Order = 0, Visible = true, Label = "Imagen", Path = "menu.items[0].image", Editable = true, Value = new ImageValue { Src = "https://placehold.co/400x250?text=Tagliatelle", Alt = "Tagliatelle al Ragù", Width = 400, Height = 250 } },
+                                    new ComponentNode { Id = "bi-d1-name", Type = "heading", Order = 1, Visible = true, Label = "Nombre", Path = "menu.items[0].name", Editable = true, Value = "Tagliatelle al Ragù" },
+                                    new ComponentNode { Id = "bi-d1-desc", Type = "paragraph", Order = 2, Visible = true, Label = "Descripción", Path = "menu.items[0].desc", Editable = true, Value = "Pasta fresca con ragù de res y cerdo, cocido lentamente durante 6 horas." },
+                                    new ComponentNode { Id = "bi-d1-price", Type = "text", Order = 3, Visible = true, Label = "Precio", Path = "menu.items[0].price", Editable = true, Value = "$195 MXN" }
+                                }},
+                                new ComponentNode { Id = "bi-dish-2", Type = "card", Order = 1, Visible = true, Label = "Pizza Margherita", Path = "menu.items[1]", Editable = true, Children = new List<ComponentNode> {
+                                    new ComponentNode { Id = "bi-d2-img", Type = "image", Order = 0, Visible = true, Label = "Imagen", Path = "menu.items[1].image", Editable = true, Value = new ImageValue { Src = "https://placehold.co/400x250?text=Pizza+Margherita", Alt = "Pizza Margherita", Width = 400, Height = 250 } },
+                                    new ComponentNode { Id = "bi-d2-name", Type = "heading", Order = 1, Visible = true, Label = "Nombre", Path = "menu.items[1].name", Editable = true, Value = "Pizza Margherita" },
+                                    new ComponentNode { Id = "bi-d2-desc", Type = "paragraph", Order = 2, Visible = true, Label = "Descripción", Path = "menu.items[1].desc", Editable = true, Value = "Base de tomate San Marzano, mozzarella di bufala y albahaca fresca." },
+                                    new ComponentNode { Id = "bi-d2-price", Type = "text", Order = 3, Visible = true, Label = "Precio", Path = "menu.items[1].price", Editable = true, Value = "$165 MXN" }
+                                }},
+                                new ComponentNode { Id = "bi-dish-3", Type = "card", Order = 2, Visible = true, Label = "Tiramisù", Path = "menu.items[2]", Editable = true, Children = new List<ComponentNode> {
+                                    new ComponentNode { Id = "bi-d3-img", Type = "image", Order = 0, Visible = true, Label = "Imagen", Path = "menu.items[2].image", Editable = true, Value = new ImageValue { Src = "https://placehold.co/400x250?text=Tiramisu", Alt = "Tiramisù", Width = 400, Height = 250 } },
+                                    new ComponentNode { Id = "bi-d3-name", Type = "heading", Order = 1, Visible = true, Label = "Nombre", Path = "menu.items[2].name", Editable = true, Value = "Tiramisù della Nonna" },
+                                    new ComponentNode { Id = "bi-d3-desc", Type = "paragraph", Order = 2, Visible = true, Label = "Descripción", Path = "menu.items[2].desc", Editable = true, Value = "Receta tradicional con mascarpone, espresso y Savoiardi artesanales." },
+                                    new ComponentNode { Id = "bi-d3-price", Type = "text", Order = 3, Visible = true, Label = "Precio", Path = "menu.items[2].price", Editable = true, Value = "$95 MXN" }
+                                }}
+                            }
+                        }
+                    }
+                },
+
+                // ─── ABOUT ────────────────────────────────────────────
+                new Section
+                {
+                    Id = "bi-about",
+                    Type = "about",
+                    Order = 3,
+                    Visible = true,
+                    Label = "Nosotros",
+                    Components = new List<ComponentNode>
+                    {
+                        new ComponentNode { Id = "bi-about-title", Type = "heading", Order = 0, Visible = true, Label = "Título", Path = "about.title", Editable = true, Value = "Nuestra Historia" },
+                        new ComponentNode { Id = "bi-about-text", Type = "paragraph", Order = 1, Visible = true, Label = "Descripción", Path = "about.text", Editable = true, Value = "Fundado en 1998 por la familia Rossi, Bella Italia nació del sueño de traer la auténtica gastronomía italiana a México. Durante más de 25 años hemos servido recetas familiares transmitidas por generaciones, usando ingredientes frescos y técnicas tradicionales." },
+                        new ComponentNode { Id = "bi-about-image", Type = "image", Order = 2, Visible = true, Label = "Imagen", Path = "about.image", Editable = true, Value = new ImageValue { Src = "https://placehold.co/600x400?text=Familia+Rossi", Alt = "La familia fundadora", Width = 600, Height = 400 } }
+                    }
+                },
+
+                // ─── CONTACT ──────────────────────────────────────────
+                new Section
+                {
+                    Id = "bi-contact",
+                    Type = "contact",
+                    Order = 4,
+                    Visible = true,
+                    Label = "Contacto",
+                    Components = new List<ComponentNode>
+                    {
+                        new ComponentNode { Id = "bi-contact-title", Type = "heading", Order = 0, Visible = true, Label = "Título", Path = "contact.title", Editable = true, Value = "Visítanos" },
+                        new ComponentNode { Id = "bi-contact-address", Type = "text", Order = 1, Visible = true, Label = "Dirección", Path = "contact.address", Editable = true, Value = "Av. Presidente Masaryk 123, Polanco, CDMX" },
+                        new ComponentNode { Id = "bi-contact-phone", Type = "text", Order = 2, Visible = true, Label = "Teléfono", Path = "contact.phone", Editable = true, Value = "+52 55 1234 5678" },
+                        new ComponentNode { Id = "bi-contact-hours", Type = "text", Order = 3, Visible = true, Label = "Horario", Path = "contact.hours", Editable = true, Value = "Lunes a Domingo: 1:00 PM – 11:00 PM" },
+                        new ComponentNode { Id = "bi-contact-cta", Type = "button", Order = 4, Visible = true, Label = "Reservar", Path = "contact.cta", Editable = true, Value = "Hacer una Reservación", Link = new LinkConfig { Href = "tel:+525512345678", Target = "_self" } }
+                    }
+                },
+
+                // ─── FOOTER ───────────────────────────────────────────
+                new Section
+                {
+                    Id = "bi-footer",
+                    Type = "footer",
+                    Order = 5,
+                    Visible = true,
+                    Label = "Footer",
+                    Components = new List<ComponentNode>
+                    {
+                        new ComponentNode { Id = "bi-footer-copy", Type = "text", Order = 0, Visible = true, Label = "Copyright", Path = "footer.copyright", Editable = true, Value = "© 2024 Bella Italia Ristorante. Todos los derechos reservados." },
+                        new ComponentNode
+                        {
+                            Id = "bi-footer-socials",
+                            Type = "list",
+                            Order = 1,
+                            Visible = true,
+                            Label = "Redes Sociales",
+                            Path = "footer.socials",
+                            Editable = false,
+                            Children = new List<ComponentNode>
+                            {
+                                new ComponentNode { Id = "bi-social-ig", Type = "social-link", Order = 0, Visible = true, Label = "Instagram", Path = "footer.socials[0]", Editable = true, Value = "Instagram", Link = new LinkConfig { Href = "https://instagram.com", Target = "_blank", Rel = "noopener noreferrer" } },
+                                new ComponentNode { Id = "bi-social-fb", Type = "social-link", Order = 1, Visible = true, Label = "Facebook", Path = "footer.socials[1]", Editable = true, Value = "Facebook", Link = new LinkConfig { Href = "https://facebook.com", Target = "_blank", Rel = "noopener noreferrer" } }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    private static PageSchema BuildEventosMxPage()
+    {
+        return new PageSchema
+        {
+            Id = "eventos-mx-index",
+            Slug = "index",
+            TemplateId = "organizador-eventos",
+            TenantId = "eventos-mx",
+            Seo = new SeoMeta
+            {
+                Title = "Eventos MX – Organizamos tus momentos más especiales",
+                Description = "Bodas, quinceañeras, eventos corporativos y más. Creamos experiencias únicas e inolvidables para cada ocasión.",
+                OgImage = "https://placehold.co/1200x630?text=Eventos+MX"
+            },
+            Theme = new ThemeConfig
+            {
+                PrimaryColor = "#7c3aed",
+                SecondaryColor = "#a78bfa",
+                AccentColor = "#fbbf24",
+                BackgroundColor = "#faf5ff",
+                TextColor = "#1f1035",
+                PrimaryFont = "Cormorant Garamond",
+                SecondaryFont = "Inter"
+            },
+            Sections = new List<Section>
+            {
+                // ─── HEADER ───────────────────────────────────────────
+                new Section
+                {
+                    Id = "em-header",
+                    Type = "header",
+                    Order = 0,
+                    Visible = true,
+                    Label = "Header",
+                    Components = new List<ComponentNode>
+                    {
+                        new ComponentNode { Id = "em-logo", Type = "image", Order = 0, Visible = true, Label = "Logo", Path = "header.logo", Editable = true, Value = new ImageValue { Src = "https://placehold.co/130x42?text=Eventos+MX", Alt = "Eventos MX Logo", Width = 130, Height = 42 } },
+                        new ComponentNode
+                        {
+                            Id = "em-nav",
+                            Type = "list",
+                            Order = 1,
+                            Visible = true,
+                            Label = "Navegación",
+                            Path = "header.nav",
+                            Editable = false,
+                            Children = new List<ComponentNode>
+                            {
+                                new ComponentNode { Id = "em-nav-1", Type = "nav-item", Order = 0, Visible = true, Label = "Inicio", Path = "header.nav[0]", Editable = true, Value = "Inicio", Link = new LinkConfig { Href = "#hero", Target = "_self" } },
+                                new ComponentNode { Id = "em-nav-2", Type = "nav-item", Order = 1, Visible = true, Label = "Servicios", Path = "header.nav[1]", Editable = true, Value = "Servicios", Link = new LinkConfig { Href = "#services", Target = "_self" } },
+                                new ComponentNode { Id = "em-nav-3", Type = "nav-item", Order = 2, Visible = true, Label = "Galería", Path = "header.nav[2]", Editable = true, Value = "Galería", Link = new LinkConfig { Href = "#gallery", Target = "_self" } },
+                                new ComponentNode { Id = "em-nav-4", Type = "nav-item", Order = 3, Visible = true, Label = "Testimonios", Path = "header.nav[3]", Editable = true, Value = "Testimonios", Link = new LinkConfig { Href = "#testimonials", Target = "_self" } },
+                                new ComponentNode { Id = "em-nav-5", Type = "nav-item", Order = 4, Visible = true, Label = "Contacto", Path = "header.nav[4]", Editable = true, Value = "Contacto", Link = new LinkConfig { Href = "#contact", Target = "_self" } },
+                                new ComponentNode { Id = "em-nav-cta", Type = "button", Order = 5, Visible = true, Label = "Cotizar", Path = "header.navCta", Editable = true, Value = "Solicitar Cotización", Link = new LinkConfig { Href = "#contact", Target = "_self" } }
+                            }
+                        }
+                    }
+                },
+
+                // ─── HERO ─────────────────────────────────────────────
+                new Section
+                {
+                    Id = "em-hero",
+                    Type = "hero",
+                    Order = 1,
+                    Visible = true,
+                    Label = "Hero",
+                    Components = new List<ComponentNode>
+                    {
+                        new ComponentNode { Id = "em-hero-badge", Type = "badge", Order = 0, Visible = true, Label = "Badge", Path = "hero.badge", Editable = true, Value = "✨ Más de 500 eventos realizados" },
+                        new ComponentNode { Id = "em-hero-title", Type = "heading", Order = 1, Visible = true, Label = "Título", Path = "hero.title", Editable = true, Value = "Organizamos tus momentos más especiales", Typography = new TypographyConfig { FontSize = "5xl", FontWeight = "bold", TextAlign = "center" } },
+                        new ComponentNode { Id = "em-hero-subtitle", Type = "paragraph", Order = 2, Visible = true, Label = "Subtítulo", Path = "hero.subtitle", Editable = true, Value = "Bodas, quinceañeras, eventos corporativos y celebraciones de vida. Convertimos tus sueños en experiencias únicas e inolvidables.", Typography = new TypographyConfig { FontSize = "xl", TextAlign = "center" } },
+                        new ComponentNode { Id = "em-hero-cta", Type = "button", Order = 3, Visible = true, Label = "CTA Principal", Path = "hero.cta", Editable = true, Value = "Solicitar cotización", Link = new LinkConfig { Href = "#contact", Target = "_self" } },
+                        new ComponentNode { Id = "em-hero-image", Type = "image", Order = 4, Visible = true, Label = "Imagen Principal", Path = "hero.image", Editable = true, Value = new ImageValue { Src = "https://placehold.co/1200x500?text=Eventos+MX+Hero", Alt = "Evento de bodas Eventos MX", Width = 1200, Height = 500 } }
+                    }
+                },
+
+                // ─── SERVICES ─────────────────────────────────────────
+                new Section
+                {
+                    Id = "em-services",
+                    Type = "services",
+                    Order = 2,
+                    Visible = true,
+                    Label = "Servicios",
+                    Components = new List<ComponentNode>
+                    {
+                        new ComponentNode { Id = "em-svc-title", Type = "heading", Order = 0, Visible = true, Label = "Título", Path = "services.title", Editable = true, Value = "Nuestros Servicios", Typography = new TypographyConfig { FontSize = "3xl", FontWeight = "bold", TextAlign = "center" } },
+                        new ComponentNode { Id = "em-svc-subtitle", Type = "paragraph", Order = 1, Visible = true, Label = "Subtítulo", Path = "services.subtitle", Editable = true, Value = "Todo lo que necesitas para un evento perfecto, en un solo lugar." },
+                        new ComponentNode
+                        {
+                            Id = "em-svc-list",
+                            Type = "list",
+                            Order = 2,
+                            Visible = true,
+                            Label = "Lista de Servicios",
+                            Path = "services.items",
+                            Editable = false,
+                            Children = new List<ComponentNode>
+                            {
+                                new ComponentNode { Id = "em-svc-1", Type = "card", Order = 0, Visible = true, Label = "Bodas", Path = "services.items[0]", Editable = true, Children = new List<ComponentNode> {
+                                    new ComponentNode { Id = "em-s1-icon", Type = "icon", Order = 0, Visible = true, Label = "Ícono", Path = "services.items[0].icon", Editable = true, Value = "💍" },
+                                    new ComponentNode { Id = "em-s1-title", Type = "heading", Order = 1, Visible = true, Label = "Título", Path = "services.items[0].title", Editable = true, Value = "Bodas" },
+                                    new ComponentNode { Id = "em-s1-desc", Type = "paragraph", Order = 2, Visible = true, Label = "Descripción", Path = "services.items[0].desc", Editable = true, Value = "Organizamos tu boda soñada de principio a fin: desde la decoración hasta el banquete y la música." }
+                                }},
+                                new ComponentNode { Id = "em-svc-2", Type = "card", Order = 1, Visible = true, Label = "XV Años", Path = "services.items[1]", Editable = true, Children = new List<ComponentNode> {
+                                    new ComponentNode { Id = "em-s2-icon", Type = "icon", Order = 0, Visible = true, Label = "Ícono", Path = "services.items[1].icon", Editable = true, Value = "👑" },
+                                    new ComponentNode { Id = "em-s2-title", Type = "heading", Order = 1, Visible = true, Label = "Título", Path = "services.items[1].title", Editable = true, Value = "XV Años" },
+                                    new ComponentNode { Id = "em-s2-desc", Type = "paragraph", Order = 2, Visible = true, Label = "Descripción", Path = "services.items[1].desc", Editable = true, Value = "Celebraciones de quinceañera únicas con decoración temática, fotografía y coordinación completa." }
+                                }},
+                                new ComponentNode { Id = "em-svc-3", Type = "card", Order = 2, Visible = true, Label = "Eventos Corporativos", Path = "services.items[2]", Editable = true, Children = new List<ComponentNode> {
+                                    new ComponentNode { Id = "em-s3-icon", Type = "icon", Order = 0, Visible = true, Label = "Ícono", Path = "services.items[2].icon", Editable = true, Value = "🏢" },
+                                    new ComponentNode { Id = "em-s3-title", Type = "heading", Order = 1, Visible = true, Label = "Título", Path = "services.items[2].title", Editable = true, Value = "Eventos Corporativos" },
+                                    new ComponentNode { Id = "em-s3-desc", Type = "paragraph", Order = 2, Visible = true, Label = "Descripción", Path = "services.items[2].desc", Editable = true, Value = "Conferencias, lanzamientos de productos, team buildings y convenciones con logística impecable." }
+                                }}
+                            }
+                        }
+                    }
+                },
+
+                // ─── GALLERY ──────────────────────────────────────────
+                new Section
+                {
+                    Id = "em-gallery",
+                    Type = "gallery",
+                    Order = 3,
+                    Visible = true,
+                    Label = "Galería",
+                    Components = new List<ComponentNode>
+                    {
+                        new ComponentNode { Id = "em-gal-title", Type = "heading", Order = 0, Visible = true, Label = "Título", Path = "gallery.title", Editable = true, Value = "Nuestros Eventos", Typography = new TypographyConfig { FontSize = "3xl", FontWeight = "bold", TextAlign = "center" } },
+                        new ComponentNode
+                        {
+                            Id = "em-gal-items",
+                            Type = "list",
+                            Order = 1,
+                            Visible = true,
+                            Label = "Fotografías",
+                            Path = "gallery.items",
+                            Editable = false,
+                            Children = new List<ComponentNode>
+                            {
+                                new ComponentNode { Id = "em-gal-1", Type = "image", Order = 0, Visible = true, Label = "Foto 1", Path = "gallery.items[0]", Editable = true, Value = new ImageValue { Src = "https://placehold.co/600x400?text=Boda+Elegante", Alt = "Boda elegante en jardín", Width = 600, Height = 400 } },
+                                new ComponentNode { Id = "em-gal-2", Type = "image", Order = 1, Visible = true, Label = "Foto 2", Path = "gallery.items[1]", Editable = true, Value = new ImageValue { Src = "https://placehold.co/600x400?text=XV+Anos", Alt = "Celebración de XV años", Width = 600, Height = 400 } },
+                                new ComponentNode { Id = "em-gal-3", Type = "image", Order = 2, Visible = true, Label = "Foto 3", Path = "gallery.items[2]", Editable = true, Value = new ImageValue { Src = "https://placehold.co/600x400?text=Evento+Corporativo", Alt = "Evento corporativo", Width = 600, Height = 400 } },
+                                new ComponentNode { Id = "em-gal-4", Type = "image", Order = 3, Visible = true, Label = "Foto 4", Path = "gallery.items[3]", Editable = true, Value = new ImageValue { Src = "https://placehold.co/600x400?text=Cumpleanos", Alt = "Celebración de cumpleaños", Width = 600, Height = 400 } }
+                            }
+                        }
+                    }
+                },
+
+                // ─── TESTIMONIALS ─────────────────────────────────────
+                new Section
+                {
+                    Id = "em-testimonials",
+                    Type = "testimonials",
+                    Order = 4,
+                    Visible = true,
+                    Label = "Testimonios",
+                    Components = new List<ComponentNode>
+                    {
+                        new ComponentNode { Id = "em-test-title", Type = "heading", Order = 0, Visible = true, Label = "Título", Path = "testimonials.title", Editable = true, Value = "Lo que dicen nuestros clientes" },
+                        new ComponentNode
+                        {
+                            Id = "em-test-list",
+                            Type = "list",
+                            Order = 1,
+                            Visible = true,
+                            Label = "Testimonios",
+                            Path = "testimonials.items",
+                            Editable = false,
+                            Children = new List<ComponentNode>
+                            {
+                                new ComponentNode { Id = "em-t1", Type = "testimonial-card", Order = 0, Visible = true, Label = "Testimonio 1", Path = "testimonials.items[0]", Editable = true, Children = new List<ComponentNode> {
+                                    new ComponentNode { Id = "em-t1-quote", Type = "paragraph", Order = 0, Visible = true, Label = "Cita", Path = "testimonials.items[0].quote", Editable = true, Value = "Eventos MX hizo de nuestra boda un sueño hecho realidad. Cada detalle fue perfecto y superaron todas nuestras expectativas." },
+                                    new ComponentNode { Id = "em-t1-avatar", Type = "image", Order = 1, Visible = true, Label = "Foto", Path = "testimonials.items[0].avatar", Editable = true, Value = new ImageValue { Src = "https://placehold.co/80x80?text=MC", Alt = "María y Carlos", Width = 80, Height = 80 } },
+                                    new ComponentNode { Id = "em-t1-name", Type = "text", Order = 2, Visible = true, Label = "Nombre", Path = "testimonials.items[0].name", Editable = true, Value = "María y Carlos" },
+                                    new ComponentNode { Id = "em-t1-role", Type = "text", Order = 3, Visible = true, Label = "Rol", Path = "testimonials.items[0].role", Editable = true, Value = "Boda 2023" }
+                                }},
+                                new ComponentNode { Id = "em-t2", Type = "testimonial-card", Order = 1, Visible = true, Label = "Testimonio 2", Path = "testimonials.items[1]", Editable = true, Children = new List<ComponentNode> {
+                                    new ComponentNode { Id = "em-t2-quote", Type = "paragraph", Order = 0, Visible = true, Label = "Cita", Path = "testimonials.items[1].quote", Editable = true, Value = "El XV años de mi hija fue simplemente mágico. La coordinación fue impecable y todos los invitados quedaron encantados." },
+                                    new ComponentNode { Id = "em-t2-avatar", Type = "image", Order = 1, Visible = true, Label = "Foto", Path = "testimonials.items[1].avatar", Editable = true, Value = new ImageValue { Src = "https://placehold.co/80x80?text=LM", Alt = "Laura Martínez", Width = 80, Height = 80 } },
+                                    new ComponentNode { Id = "em-t2-name", Type = "text", Order = 2, Visible = true, Label = "Nombre", Path = "testimonials.items[1].name", Editable = true, Value = "Laura Martínez" },
+                                    new ComponentNode { Id = "em-t2-role", Type = "text", Order = 3, Visible = true, Label = "Rol", Path = "testimonials.items[1].role", Editable = true, Value = "XV Años 2023" }
+                                }},
+                                new ComponentNode { Id = "em-t3", Type = "testimonial-card", Order = 2, Visible = true, Label = "Testimonio 3", Path = "testimonials.items[2]", Editable = true, Children = new List<ComponentNode> {
+                                    new ComponentNode { Id = "em-t3-quote", Type = "paragraph", Order = 0, Visible = true, Label = "Cita", Path = "testimonials.items[2].quote", Editable = true, Value = "Organizaron nuestra convención anual para 300 personas con profesionalismo y creatividad excepcionales." },
+                                    new ComponentNode { Id = "em-t3-avatar", Type = "image", Order = 1, Visible = true, Label = "Foto", Path = "testimonials.items[2].avatar", Editable = true, Value = new ImageValue { Src = "https://placehold.co/80x80?text=JR", Alt = "Jorge Ramírez", Width = 80, Height = 80 } },
+                                    new ComponentNode { Id = "em-t3-name", Type = "text", Order = 2, Visible = true, Label = "Nombre", Path = "testimonials.items[2].name", Editable = true, Value = "Jorge Ramírez" },
+                                    new ComponentNode { Id = "em-t3-role", Type = "text", Order = 3, Visible = true, Label = "Rol", Path = "testimonials.items[2].role", Editable = true, Value = "Director, Empresa TechCorp" }
+                                }}
+                            }
+                        }
+                    }
+                },
+
+                // ─── CONTACT ──────────────────────────────────────────
+                new Section
+                {
+                    Id = "em-contact",
+                    Type = "contact",
+                    Order = 5,
+                    Visible = true,
+                    Label = "Contacto",
+                    Components = new List<ComponentNode>
+                    {
+                        new ComponentNode { Id = "em-contact-title", Type = "heading", Order = 0, Visible = true, Label = "Título", Path = "contact.title", Editable = true, Value = "Contáctanos" },
+                        new ComponentNode { Id = "em-contact-subtitle", Type = "paragraph", Order = 1, Visible = true, Label = "Subtítulo", Path = "contact.subtitle", Editable = true, Value = "Cuéntanos sobre tu evento y te enviaremos una cotización personalizada sin costo." },
+                        new ComponentNode { Id = "em-contact-phone", Type = "text", Order = 2, Visible = true, Label = "Teléfono", Path = "contact.phone", Editable = true, Value = "+52 55 9876 5432" },
+                        new ComponentNode { Id = "em-contact-email", Type = "text", Order = 3, Visible = true, Label = "Email", Path = "contact.email", Editable = true, Value = "hola@eventosmx.com" },
+                        new ComponentNode { Id = "em-contact-cta", Type = "button", Order = 4, Visible = true, Label = "CTA Cotización", Path = "contact.cta", Editable = true, Value = "Solicitar Cotización", Link = new LinkConfig { Href = "mailto:hola@eventosmx.com", Target = "_self" } }
+                    }
+                },
+
+                // ─── FOOTER ───────────────────────────────────────────
+                new Section
+                {
+                    Id = "em-footer",
+                    Type = "footer",
+                    Order = 6,
+                    Visible = true,
+                    Label = "Footer",
+                    Components = new List<ComponentNode>
+                    {
+                        new ComponentNode { Id = "em-footer-copy", Type = "text", Order = 0, Visible = true, Label = "Copyright", Path = "footer.copyright", Editable = true, Value = "© 2024 Eventos MX. Todos los derechos reservados." },
+                        new ComponentNode
+                        {
+                            Id = "em-footer-socials",
+                            Type = "list",
+                            Order = 1,
+                            Visible = true,
+                            Label = "Redes Sociales",
+                            Path = "footer.socials",
+                            Editable = false,
+                            Children = new List<ComponentNode>
+                            {
+                                new ComponentNode { Id = "em-social-ig", Type = "social-link", Order = 0, Visible = true, Label = "Instagram", Path = "footer.socials[0]", Editable = true, Value = "Instagram", Link = new LinkConfig { Href = "https://instagram.com", Target = "_blank", Rel = "noopener noreferrer" } },
+                                new ComponentNode { Id = "em-social-fb", Type = "social-link", Order = 1, Visible = true, Label = "Facebook", Path = "footer.socials[1]", Editable = true, Value = "Facebook", Link = new LinkConfig { Href = "https://facebook.com", Target = "_blank", Rel = "noopener noreferrer" } }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+    }
 }

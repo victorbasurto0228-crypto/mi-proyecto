@@ -1,0 +1,35 @@
+---
+// templates/default/index.astro – Our own marketing landing page (shown when no tenant)
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from './components/Hero.astro';
+import Features from './components/Features.astro';
+import Pricing from './components/Pricing.astro';
+import CTA from './components/CTA.astro';
+import Footer from './components/Footer.astro';
+---
+
+<BaseLayout
+  seo={{
+    title: 'LandingCraft – Build beautiful landing pages',
+    description: 'The multi-tenant landing page platform for modern businesses. Visual editor, Astro SSR, and .NET 8 backend.',
+  }}
+  theme={{ primaryColor: '#6366f1', secondaryColor: '#8b5cf6', accentColor: '#f59e0b' }}
+>
+  <header class="bg-white border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <span class="text-xl font-bold" style="color: var(--color-primary)">LandingCraft</span>
+      <a href="/app" class="px-4 py-2 rounded-lg text-white text-sm font-semibold" style="background-color: var(--color-primary)">
+        Open Editor
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <Hero />
+    <Features />
+    <Pricing />
+    <CTA />
+  </main>
+
+  <Footer />
+</BaseLayout>

@@ -26,14 +26,14 @@ const cards = (grid?.children ?? []).filter(c => c.visible).sort((a, b) => a.ord
         <ComponentRenderer node={subtitle} />
       </div>
     )}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="flex flex-wrap justify-center gap-8">
       {cards.map(card => {
         const cardChildren = (card.children ?? []).filter(c => c.visible).sort((a, b) => a.order - b.order);
         const icon = cardChildren.find(c => c.type === 'icon');
         const title = cardChildren.find(c => c.type === 'heading');
         const desc = cardChildren.find(c => c.type === 'paragraph');
         return (
-          <div class="bg-gray-50 rounded-2xl p-8 flex flex-col gap-4 hover:shadow-md transition">
+          <div class="bg-gray-50 rounded-2xl p-8 flex flex-col gap-4 hover:shadow-md transition w-full sm:w-72 lg:w-80">
             {icon && (
               <span class="text-4xl">{String(icon.value ?? '')}</span>
             )}

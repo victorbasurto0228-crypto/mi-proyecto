@@ -1,0 +1,26 @@
+---
+// templates/default/components/Hero.astro – Hero section for our own marketing landing page
+---
+
+<section id="hero" class="py-24 bg-gradient-to-b from-indigo-50 to-white text-center">
+  <div class="max-w-4xl mx-auto px-4">
+    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-700 mb-6">
+      🚀 Multi-tenant landing pages
+    </span>
+    <h1 class="text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
+      Create stunning landing pages<br />for every tenant
+    </h1>
+    <p class="text-xl text-gray-500 mb-10 max-w-2xl mx-auto">
+      A visual editor + dynamic renderer built with Astro, React, and .NET 8.
+      Deploy once, power thousands of unique landing pages.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="/app" class="px-8 py-4 rounded-xl text-white font-semibold text-lg shadow-lg hover:opacity-90 transition" style="background-color: var(--color-primary)">
+        Open Editor
+      </a>
+      <a href="/?tenant=demo" class="px-8 py-4 rounded-xl font-semibold text-lg border border-gray-200 hover:bg-gray-50 transition text-gray-700">
+        View Demo Tenant →
+      </a>
+    </div>
+  </div>
+</section>

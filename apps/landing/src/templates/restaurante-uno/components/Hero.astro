@@ -1,0 +1,52 @@
+---
+import type { Section } from '../../../types/page-schema';
+
+export interface Props {
+  section: Section;
+}
+
+const { section } = Astro.props;
+const comps = section.components.filter(c => c.visible).sort((a, b) => a.order - b.order);
+
+const badge = comps.find(c => c.type === 'badge');
+const heading = comps.find(c => c.type === 'heading');
+const paragraph = comps.find(c => c.type === 'paragraph');
+const button = comps.find(c => c.type === 'button');
+const image = comps.find(c => c.type === 'image');
+const img = image?.value as { src: string; alt: string; width?: number; height?: number } | undefined;
+---
+
+<section id="hero" class="relative overflow-hidden">
+  {img && (
+    <div class="absolute inset-0">
+      <img src={img.src} alt={img.alt} class="w-full h-full object-cover" loading="eager" />
+      <div class="absolute inset-0" style="background: rgba(0,0,0,0.55)"></div>
+    </div>
+  )}
+  <div class="relative z-10 flex flex-col items-center justify-center text-center px-4 py-32 sm:py-40">
+    {badge && (
+      <span class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold mb-6"
+            style="background: rgba(255,255,255,0.15); color: #fff; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.3)">
+        {String(badge.value ?? '')}
+      </span>
+    )}
+    {heading && (
+      <h1 class="text-4xl sm:text-6xl font-extrabold text-white mb-6 max-w-4xl leading-tight" data-component-id={heading.id}>
+        {String(heading.value ?? '')}
+      </h1>
+    )}
+    {paragraph && (
+      <p class="text-xl text-gray-200 mb-10 max-w-2xl" data-component-id={paragraph.id}>
+        {String(paragraph.value ?? '')}
+      </p>
+    )}
+    {button && (
+      <a href={button.link?.href ?? '#contact'}
+         class="inline-flex items-center justify-center px-8 py-4 rounded-xl font-bold text-lg shadow-xl hover:opacity-90 transition"
+         style="background-color: var(--color-primary); color: white;"
+         data-component-id={button.id}>
+        {String(button.value ?? '')}
+      </a>
+    )}
+  </div>
+</section>

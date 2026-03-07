@@ -5,10 +5,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const url = new URL(context.request.url);
 
   // Extract subdomain from host (e.g., "demo.localhost" → "demo")
+  // Skip IP addresses (e.g., "127.0.0.1", "10.0.0.1")
+  const isIpAddress = /^[\d.]+$/.test(host.split(':')[0]);
   const hostParts = host.split('.');
   let tenantId: string | undefined;
 
-  if (hostParts.length > 1 && hostParts[0] !== 'www') {
+  if (!isIpAddress && hostParts.length > 1 && hostParts[0] !== 'www') {
     // Filter out common non-tenant subdomains
     const nonTenant = ['www', 'app', 'api', 'localhost'];
     if (!nonTenant.includes(hostParts[0])) {

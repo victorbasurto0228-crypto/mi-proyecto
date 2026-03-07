@@ -1,0 +1,57 @@
+---
+import type { Section } from '../../../types/page-schema';
+
+export interface Props {
+  section: Section;
+}
+
+const { section } = Astro.props;
+const comps = section.components.filter(c => c.visible).sort((a, b) => a.order - b.order);
+
+const heading = comps.find(c => c.type === 'heading');
+const testimonialsList = comps.find(c => c.type === 'list');
+const testimonials = (testimonialsList?.children ?? []).filter(c => c.visible).sort((a, b) => a.order - b.order);
+---
+
+<section id="testimonials" class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    {heading && (
+      <h2 class="text-4xl font-extrabold text-center mb-16" style="color: var(--color-text)" data-component-id={heading.id}>
+        {String(heading.value ?? '')}
+      </h2>
+    )}
+    <div class="flex flex-wrap justify-center gap-8">
+      {testimonials.map(card => {
+        const children = (card.children ?? []).filter(c => c.visible).sort((a, b) => a.order - b.order);
+        const quote = children.find(c => c.type === 'paragraph');
+        const avatar = children.find(c => c.type === 'image');
+        const name = children.find(c => c.type === 'text' && c.id.includes('name'));
+        const role = children.find(c => c.type === 'text' && c.id.includes('role'));
+        const avatarImg = avatar?.value as { src: string; alt: string } | undefined;
+        return (
+          <div class="bg-purple-50 rounded-2xl p-8 shadow-sm border border-purple-100 flex flex-col gap-4 w-full sm:w-80 lg:w-96">
+            <div class="flex items-center gap-1 mb-2">
+              {'★★★★★'.split('').map(s => <span class="text-yellow-400 text-lg">{s}</span>)}
+            </div>
+            {quote && (
+              <p class="text-gray-700 italic leading-relaxed flex-1" data-component-id={quote.id}>
+                "{String(quote.value ?? '')}"
+              </p>
+            )}
+            <div class="flex items-center gap-3 mt-auto">
+              {avatarImg && (
+                <img src={avatarImg.src} alt={avatarImg.alt} width={48} height={48}
+                     class="w-12 h-12 rounded-full object-cover" loading="lazy"
+                     data-component-id={avatar?.id} />
+              )}
+              <div>
+                {name && <p class="font-semibold" style="color: var(--color-text)" data-component-id={name.id}>{String(name.value ?? '')}</p>}
+                {role && <p class="text-sm text-gray-500" data-component-id={role.id}>{String(role.value ?? '')}</p>}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</section>

@@ -111,7 +111,7 @@ const visibleChildren = (node.children ?? [])
     )}
 
     {(node.type === 'list' || node.type === 'grid' || node.type === 'group') && (
-      <div class={node.type === 'grid' ? 'grid grid-cols-1 md:grid-cols-3 gap-8' : 'flex flex-col gap-4'}>
+      <div class={node.type === 'grid' ? 'flex flex-wrap gap-8' : 'flex flex-col gap-4'}>
         {visibleChildren.map(child => (
           <Astro.self node={child} />
         ))}

@@ -1,0 +1,36 @@
+---
+import type { Section } from '../../../types/page-schema';
+
+export interface Props {
+  section: Section;
+}
+
+const { section } = Astro.props;
+const comps = section.components.filter(c => c.visible).sort((a, b) => a.order - b.order);
+
+const heading = comps.find(c => c.type === 'heading');
+const imagesList = comps.find(c => c.type === 'list');
+const images = (imagesList?.children ?? []).filter(c => c.visible).sort((a, b) => a.order - b.order);
+---
+
+<section id="gallery" class="py-20 bg-purple-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    {heading && (
+      <h2 class="text-4xl font-extrabold text-center mb-16" style="color: var(--color-primary)" data-component-id={heading.id}>
+        {String(heading.value ?? '')}
+      </h2>
+    )}
+    <div class="flex flex-wrap justify-center gap-4">
+      {images.map(imgNode => {
+        const imgVal = imgNode.value as { src: string; alt: string; width?: number; height?: number } | undefined;
+        return imgVal ? (
+          <div class="rounded-2xl overflow-hidden shadow-md w-full sm:w-72 lg:w-80">
+            <img src={imgVal.src} alt={imgVal.alt} width={imgVal.width} height={imgVal.height}
+                 class="w-full h-52 object-cover hover:scale-105 transition-transform duration-300"
+                 loading="lazy" data-component-id={imgNode.id} />
+          </div>
+        ) : null;
+      })}
+    </div>
+  </div>
+</section>
